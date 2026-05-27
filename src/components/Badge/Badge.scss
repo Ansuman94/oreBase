@@ -1,0 +1,36 @@
+@use '../../styles/variables' as v;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px v.$space-6;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  &--sulfide  { background: #FFF0E0; color: #8A4500;      border: 1px solid #F0C090; }
+  &--oxide    { background: v.$color-green-light; color: v.$color-green; border: 1px solid v.$color-green-border; }
+  &--mixed    { background: #F0EAFF; color: #5530A0;      border: 1px solid #C8B0F0; }
+  &--brine    { background: v.$color-blue-light;  color: v.$color-blue;  border: 1px solid v.$color-blue-border; }
+  &--carbonate{ background: #FFF8E0; color: #806000;      border: 1px solid #E8D080; }
+  &--process  { background: v.$color-brand-light; color: v.$color-brand; border: 1px solid v.$color-brand-mid; }
+  &--ok       { background: v.$color-green-light; color: v.$color-green; border: 1px solid v.$color-green-border; }
+  &--warn     { background: v.$color-amber-light; color: v.$color-amber; border: 1px solid v.$color-amber-border; }
+  &--bad      { background: v.$color-red-light;   color: v.$color-red;   border: 1px solid v.$color-red-border; }
+
+  // Mineral types
+  &--silicate  { background: v.$badge-silicate-bg;  color: v.$badge-silicate-text;  border: 1px solid v.$badge-silicate-border; }
+  &--native    { background: v.$badge-native-bg;    color: v.$badge-native-text;    border: 1px solid v.$badge-native-border; }
+  &--phosphate { background: v.$badge-phosphate-bg; color: v.$badge-phosphate-text; border: 1px solid v.$badge-phosphate-border; }
+  &--sulfate   { background: v.$badge-sulfate-bg;   color: v.$badge-sulfate-text;   border: 1px solid v.$badge-sulfate-border; }
+  &--halide    { background: v.$badge-halide-bg;    color: v.$badge-halide-text;    border: 1px solid v.$badge-halide-border; }
+
+  // Flotation response
+  &--float-vg  { background: #E3F0EA; color: #1E5A38; border: 1px solid #9FCDB5; }
+  &--float-g   { background: #E8F4FF; color: #1A4A7A; border: 1px solid #90B0E8; }
+  &--float-m   { background: #FFF8E0; color: #7A5800; border: 1px solid #E8D080; }
+  &--float-p   { background: #FFF0E0; color: #7A3008; border: 1px solid #E8B888; }
+  &--float-n   { background: v.$color-surface; color: v.$color-muted; border: 1px solid v.$color-border; }
+}

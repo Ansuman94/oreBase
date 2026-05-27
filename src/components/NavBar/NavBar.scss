@@ -1,0 +1,70 @@
+@use '../../styles/variables' as v;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: v.$nav-height;
+  background: v.$color-white;
+  border-bottom: 1px solid v.$color-border;
+  display: flex;
+  align-items: center;
+
+  &__brand {
+    width: v.$sidebar-width;
+    padding: 0 v.$space-18;
+    display: flex;
+    align-items: center;
+    gap: v.$space-9;
+    flex-shrink: 0;
+    border-right: 1px solid v.$color-border;
+    height: 100%;
+  }
+
+  &__gem {
+    width: 30px;
+    height: 30px;
+    background: v.$color-brand;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg { width: 16px; height: 16px; }
+  }
+
+  &__name {
+    font-size: 15px;
+    font-weight: 600;
+    color: v.$color-dark;
+    letter-spacing: -0.3px;
+  }
+
+  &__tag {
+    font-size: 10px;
+    color: v.$color-muted;
+    margin-top: -1px;
+    letter-spacing: 0.3px;
+  }
+
+  &__center {
+    flex: 1;
+    padding: 0 v.$space-14;
+    display: flex;
+    align-items: center;
+    gap: v.$space-10;
+    height: 100%;
+    border-right: 1px solid v.$color-border;
+  }
+
+  &__right {
+    padding: 0 v.$space-16;
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    flex-shrink: 0;
+  }
+}

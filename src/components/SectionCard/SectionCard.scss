@@ -1,0 +1,16 @@
+@use '../../styles/variables' as v;
+
+.section-card {
+  background: v.$color-white;
+  border: 1px solid v.$color-border;
+  border-radius: 6px;
+  padding: v.$space-18 v.$space-20;
+  margin-bottom: v.$space-16;
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: v.$color-text;
+    margin-bottom: v.$space-14;
+  }
+}

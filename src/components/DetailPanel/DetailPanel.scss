@@ -1,0 +1,95 @@
+@use '../../styles/variables' as v;
+
+.detail-panel {
+  width: v.$detail-width;
+  min-width: v.$detail-width;
+  background: v.$color-white;
+  border-left: 1px solid v.$color-border;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s, min-width 0.2s;
+
+  &--closed {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &__header {
+    padding: v.$space-12 v.$space-14;
+    border-bottom: 1px solid v.$color-border;
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-8;
+    flex-shrink: 0;
+  }
+
+  &__info { flex: 1; min-width: 0; }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: v.$color-text;
+    line-height: 1.3;
+    margin-bottom: v.$space-2;
+  }
+
+  &__sub {
+    font-size: 11px;
+    color: v.$color-muted;
+    font-family: v.$font-mono;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    color: v.$color-muted;
+    padding: 2px;
+    line-height: 0;
+    flex-shrink: 0;
+    transition: color 0.12s;
+
+    &:hover { color: v.$color-text; }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: v.$space-14;
+  }
+
+  &__footer {
+    padding: v.$space-10 v.$space-12;
+    border-top: 1px solid v.$color-border;
+    display: flex;
+    gap: v.$space-6;
+    flex-shrink: 0;
+  }
+
+  &__footer-btn {
+    flex: 1;
+    padding: v.$space-6 v.$space-10;
+    border: 1px solid v.$color-border;
+    border-radius: 3px;
+    background: none;
+    font-size: 11px;
+    color: v.$color-sub;
+    font-family: v.$font-sans;
+    transition: all 0.12s;
+
+    &:hover {
+      background: v.$color-surface;
+      color: v.$color-text;
+    }
+
+    &--primary {
+      background: v.$color-brand;
+      color: v.$color-white;
+      border-color: v.$color-brand;
+      font-weight: 500;
+
+      &:hover { background: v.$color-brand-dark; }
+    }
+  }
+}

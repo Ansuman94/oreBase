@@ -1,0 +1,83 @@
+@use '../../styles/variables' as v;
+
+.mineral-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mineral-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__th {
+    padding: v.$space-8 v.$space-12;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: v.$color-muted;
+    text-align: left;
+    background: v.$color-white;
+    border-bottom: 1px solid v.$color-border;
+    position: sticky;
+    top: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition: color 0.12s;
+
+    &:hover { color: v.$color-text; }
+
+    &--sorted { color: v.$color-brand; }
+  }
+
+  &__sort-icon {
+    font-size: 10px;
+    color: v.$color-brand;
+  }
+
+  &__row {
+    border-bottom: 1px solid v.$color-border-light;
+    cursor: pointer;
+    transition: background 0.1s;
+
+    &:hover { background: v.$color-surface; }
+
+    &--selected { background: v.$color-brand-light; }
+  }
+
+  &__td {
+    padding: v.$space-8 v.$space-12;
+    font-size: 12px;
+    color: v.$color-sub;
+    white-space: nowrap;
+
+    &--name {
+      font-size: 13px;
+      font-weight: 500;
+      color: v.$color-text;
+    }
+
+    &--formula {
+      font-family: v.$font-mono;
+      font-size: 11px;
+      color: v.$color-muted;
+    }
+
+    &--num {
+      font-family: v.$font-mono;
+      font-size: 11px;
+      text-align: right;
+    }
+  }
+
+  &__metal-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: v.$space-5;
+    vertical-align: middle;
+    background: v.$color-faint;
+  }
+}

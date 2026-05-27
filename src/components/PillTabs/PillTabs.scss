@@ -1,0 +1,30 @@
+@use '../../styles/variables' as v;
+
+.pill-tabs {
+  display: flex;
+  gap: v.$space-4;
+  flex-wrap: wrap;
+
+  &__tab {
+    padding: v.$space-4 v.$space-14;
+    border-radius: 20px;
+    border: 1px solid v.$color-border;
+    background: v.$color-white;
+    color: v.$color-muted;
+    font-size: 12px;
+    font-family: v.$font-sans;
+    cursor: pointer;
+    transition: all 0.12s;
+
+    &:hover {
+      border-color: v.$color-brand-mid;
+      color: v.$color-text;
+    }
+
+    &--active {
+      background: v.$color-brand;
+      color: v.$color-white;
+      border-color: v.$color-brand;
+    }
+  }
+}

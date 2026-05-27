@@ -1,0 +1,63 @@
+@use '../../styles/variables' as v;
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: v.$space-8;
+  padding: v.$space-6 v.$space-14;
+  font-size: 12.5px;
+  color: v.$color-sub;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: v.$font-sans;
+
+  &:hover {
+    color: v.$color-text;
+    background: v.$color-surface;
+  }
+
+  &--active {
+    color: v.$color-brand;
+    font-weight: 500;
+    background: v.$color-brand-light;
+    border-left-color: v.$color-brand;
+
+    .sidebar-item__icon svg { opacity: 1; }
+    .sidebar-item__badge {
+      color: v.$color-brand;
+      background: v.$color-brand-light;
+      border-color: v.$color-brand-mid;
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      opacity: 0.8;
+    }
+  }
+
+  &__label { flex: 1; }
+
+  &__badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-family: v.$font-mono;
+    color: v.$color-faint;
+    background: v.$color-surface;
+    border: 1px solid v.$color-border-light;
+    border-radius: 10px;
+    padding: 0 v.$space-4;
+  }
+}

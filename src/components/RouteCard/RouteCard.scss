@@ -1,0 +1,97 @@
+@use '../../styles/variables' as v;
+
+.route-card {
+  background: v.$color-white;
+  border: 1px solid v.$color-border;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: v.$space-12;
+
+  &__head {
+    padding: v.$space-10 v.$space-14;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-10;
+
+    &--rec  { background: v.$color-brand; }
+    &--norm { background: v.$color-surface; border-bottom: 1px solid v.$color-border-light; }
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 600;
+
+    .route-card__head--rec &  { color: v.$color-white; }
+    .route-card__head--norm & { color: v.$color-text; }
+  }
+
+  &__head-r {
+    display: flex;
+    align-items: center;
+    gap: v.$space-5;
+    flex-shrink: 0;
+  }
+
+  &__rec-tag {
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.22);
+    color: v.$color-white;
+    padding: 2px v.$space-8;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid v.$color-border-light;
+  }
+
+  &__metric {
+    padding: v.$space-8 v.$space-10;
+    border-right: 1px solid v.$color-border-light;
+
+    &:last-child { border-right: none; }
+  }
+
+  &__metric-label {
+    font-size: 10px;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+  }
+
+  &__metric-val {
+    font-size: 12px;
+    font-weight: 600;
+    color: v.$color-text;
+    font-family: v.$font-mono;
+
+    &--green { color: v.$color-green; }
+  }
+
+  &__toggle {
+    font-size: 11px;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    font-family: v.$font-sans;
+    padding: v.$space-6 v.$space-14;
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+    width: 100%;
+    justify-content: flex-end;
+    cursor: pointer;
+  }
+
+  &__detail {
+    padding: v.$space-12 v.$space-14;
+    border-top: 1px solid v.$color-border-light;
+  }
+}

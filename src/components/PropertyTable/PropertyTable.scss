@@ -1,0 +1,32 @@
+@use '../../styles/variables' as v;
+
+.prop-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__row {
+    border-bottom: 1px solid v.$color-border-light;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  &__key {
+    padding: v.$space-4 0;
+    font-size: 12px;
+    color: v.$color-sub;
+    width: 52%;
+  }
+
+  &__value {
+    padding: v.$space-4 0;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: right;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+
+    &--ok   { color: v.$color-green; }
+    &--warn { color: v.$color-amber; }
+    &--bad  { color: v.$color-red; }
+  }
+}

@@ -1,0 +1,23 @@
+@use '../../styles/variables' as v;
+
+.float-tag {
+  padding: v.$space-3 v.$space-8;
+  border-radius: 20px;
+  border: 1px solid v.$color-border;
+  background: none;
+  font-size: 11px;
+  font-family: v.$font-sans;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.12s;
+
+  &:hover { opacity: 0.8; }
+
+  &--active { opacity: 1; font-weight: 500; }
+
+  &--vg { color: #1E5A38; &.float-tag--active { background: #E3F0EA; border-color: #9FCDB5; } }
+  &--g  { color: #1A4A7A; &.float-tag--active { background: #E8F4FF; border-color: #90B0E8; } }
+  &--m  { color: #7A5800; &.float-tag--active { background: #FFF8E0; border-color: #E8D080; } }
+  &--p  { color: #7A3008; &.float-tag--active { background: #FFF0E0; border-color: #E8B888; } }
+  &--n  { color: v.$color-muted; &.float-tag--active { background: v.$color-surface; border-color: v.$color-border; } }
+}
