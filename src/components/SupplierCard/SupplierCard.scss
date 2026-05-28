@@ -33,5 +33,17 @@
     display: flex;
     gap: v.$space-4;
     flex-wrap: wrap;
+    align-items: center;
+  }
+
+  &__region {
+    font-size: v.$font-size-xxs;
+    font-weight: 500;
+    padding: 1px v.$space-6;
+    border-radius: 3px;
+    background: v.$color-amber-light;
+    color: v.$color-amber;
+    border: 1px solid v.$color-amber-border;
+    white-space: nowrap;
   }
 }

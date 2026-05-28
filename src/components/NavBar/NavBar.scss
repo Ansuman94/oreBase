@@ -19,7 +19,6 @@
     align-items: center;
     gap: v.$space-9;
     flex-shrink: 0;
-    border-right: 1px solid v.$color-border;
     height: 100%;
   }
 
@@ -37,14 +36,14 @@
   }
 
   &__name {
-    font-size: 15px;
+    font-size: v.$font-size-lg;
     font-weight: 600;
     color: v.$color-dark;
     letter-spacing: -0.3px;
   }
 
   &__tag {
-    font-size: 10px;
+    font-size: v.$font-size-xxs;
     color: v.$color-muted;
     margin-top: -1px;
     letter-spacing: 0.3px;
@@ -58,6 +57,9 @@
     gap: v.$space-10;
     height: 100%;
     border-right: 1px solid v.$color-border;
+
+    .search-bar { flex: 1; }
+    .btn { margin-left: auto; }
   }
 
   &__right {

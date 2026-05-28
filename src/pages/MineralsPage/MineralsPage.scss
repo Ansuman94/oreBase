@@ -1,0 +1,318 @@
+@use '../../styles/variables' as v;
+
+.minerals-page {
+  display: grid;
+  grid-template-columns: v.$filter-width 1fr v.$detail-width;
+  height: 100%;
+  overflow: hidden;
+
+  // ── Filter sidebar ───────────────────────────────────────────────────────────
+
+  &__filters {
+    background: v.$color-white;
+    border-right: 1px solid v.$color-border;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__filter-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: v.$space-14 v.$space-14 v.$space-10;
+    border-bottom: 1px solid v.$color-border-light;
+    position: sticky;
+    top: 0;
+    background: v.$color-white;
+    z-index: 1;
+  }
+
+  &__filter-title {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text;
+    letter-spacing: 0.3px;
+  }
+
+  &__filter-clear {
+    font-size: v.$font-size-xs;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: v.$font-sans;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__filter-section {
+    padding: v.$space-12 v.$space-14 v.$space-10;
+    border-bottom: 1px solid v.$color-border-light;
+  }
+
+  &__filter-label {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: v.$color-faint;
+    margin-bottom: v.$space-8;
+  }
+
+  &__metal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: v.$space-5;
+  }
+
+  &__type-list {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-3;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: v.$space-3;
+
+    // thin scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: v.$color-border transparent;
+    &::-webkit-scrollbar       { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: v.$color-border; border-radius: 2px; }
+  }
+
+  &__float-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-5;
+  }
+
+  &__sg-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+  }
+
+  &__sg-input {
+    flex: 1;
+    min-width: 0;
+    height: 28px;
+    padding: 0 v.$space-8;
+    border: 1px solid v.$color-border;
+    border-radius: 4px;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    background: v.$color-bg;
+    color: v.$color-text;
+    &:focus { outline: none; border-color: v.$color-brand; }
+    &::placeholder { color: v.$color-faint; }
+  }
+
+  &__sg-sep {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    flex-shrink: 0;
+  }
+
+  // ── Main content ─────────────────────────────────────────────────────────────
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: v.$color-bg;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: v.$space-10;
+    padding: v.$space-10 v.$space-16;
+    background: v.$color-white;
+    border-bottom: 1px solid v.$color-border;
+    flex-shrink: 0;
+  }
+
+  &__count {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: v.$color-muted;
+    white-space: nowrap;
+    min-width: 80px;
+  }
+
+  &__search {
+    flex: 1;
+    height: 28px;
+    padding: 0 v.$space-10;
+    border: 1px solid v.$color-border;
+    border-radius: 4px;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    background: v.$color-bg;
+    color: v.$color-text;
+    &:focus { outline: none; border-color: v.$color-brand; }
+    &::placeholder { color: v.$color-faint; }
+  }
+
+  &__sort-select {
+    height: 28px;
+    padding: 0 v.$space-24 0 v.$space-10;
+    border: 1px solid v.$color-border;
+    border-radius: 4px;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    background: v.$color-bg;
+    color: v.$color-text;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23B8B2AE'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    &:focus { outline: none; border-color: v.$color-brand; }
+  }
+
+  &__results {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: v.$space-14;
+    padding: v.$space-16;
+  }
+
+  // ── Detail panel ─────────────────────────────────────────────────────────────
+
+  &__detail {
+    background: v.$color-white;
+    border-left: 1px solid v.$color-border;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__detail-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: v.$space-40;
+    gap: v.$space-14;
+  }
+
+  &__detail-empty-icon {
+    width: 48px;
+    height: 48px;
+    color: v.$color-faint;
+    svg { width: 100%; height: 100%; }
+  }
+
+  &__detail-empty-text {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    text-align: center;
+    margin: 0;
+  }
+
+  &__detail-stripe {
+    height: 3px;
+    flex-shrink: 0;
+  }
+
+  &__detail-header {
+    padding: v.$space-16 v.$space-16 v.$space-12;
+    border-bottom: 1px solid v.$color-border-light;
+  }
+
+  &__detail-name {
+    font-size: v.$font-size-lg;
+    font-weight: 600;
+    color: v.$color-text;
+    margin-bottom: v.$space-3;
+  }
+
+  &__detail-formula {
+    font-size: v.$font-size-md;
+    font-family: v.$font-mono;
+    color: v.$color-muted;
+    margin-bottom: v.$space-10;
+  }
+
+  &__detail-chips {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    flex-wrap: wrap;
+  }
+
+  &__detail-metal-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: v.$space-5;
+    font-size: v.$font-size-xs;
+    font-weight: 500;
+    color: v.$color-sub;
+  }
+
+  &__detail-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__detail-tabs {
+    display: flex;
+    border-bottom: 1px solid v.$color-border-light;
+    padding: 0 v.$space-16;
+    flex-shrink: 0;
+  }
+
+  &__detail-tab {
+    padding: v.$space-10 v.$space-12;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    color: v.$color-muted;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.12s, border-color 0.12s;
+    margin-bottom: -1px;
+
+    &:hover { color: v.$color-text; }
+
+    &--active {
+      color: v.$color-brand;
+      border-bottom-color: v.$color-brand;
+      font-weight: 500;
+    }
+  }
+
+  &__detail-body {
+    padding: v.$space-16;
+    flex: 1;
+  }
+
+  &__chart-title {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: v.$color-faint;
+    margin: v.$space-20 0 v.$space-10;
+  }
+
+  &__detail-notes {
+    font-size: v.$font-size-sm;
+    color: v.$color-sub;
+    line-height: 1.6;
+    margin: 0;
+  }
+}

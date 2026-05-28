@@ -23,13 +23,18 @@
     align-items: center;
     justify-content: center;
     margin-bottom: v.$space-10;
-    background: v.$color-brand-light;
 
     svg {
       width: 18px;
       height: 18px;
       stroke-width: 1.8;
     }
+
+    &--brand { background: v.$color-brand-light; svg { stroke: v.$color-brand; } }
+    &--green  { background: v.$color-green-light; svg { stroke: v.$color-green; } }
+    &--blue   { background: v.$color-blue-light;  svg { stroke: v.$color-blue; } }
+    &--brown  { background: v.$color-amber-light; svg { stroke: v.$color-amber; } }
+    &--olive  { background: #E8EFE0; svg { stroke: #4A5820; } }
   }
 
   &__name {

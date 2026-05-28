@@ -58,9 +58,38 @@
     font-size: 12.5px;
     font-weight: 500;
     font-family: v.$font-sans;
+    cursor: pointer;
     transition: background 0.12s;
     white-space: nowrap;
 
     &:hover { background: v.$color-brand-dark; }
+  }
+
+  &--hero {
+    width: 100%;
+
+    .search-bar__field {
+      border: 1.5px solid v.$color-border;
+      border-radius: 7px;
+      padding: v.$space-10 v.$space-10 v.$space-10 v.$space-16;
+      background: v.$color-white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+      &:focus-within {
+        border-color: v.$color-brand;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(200, 90, 10, 0.1);
+      }
+
+      svg { width: 18px; height: 18px; }
+      input { font-size: 15px; }
+    }
+
+    .search-bar__btn {
+      flex-shrink: 0;
+      margin-left: auto;
+      padding: v.$space-8 v.$space-18;
+      border-radius: 5px;
+      font-size: 13px;
+    }
   }
 }

@@ -8,13 +8,17 @@
   padding: 0;
 }
 
-html,
+html {
+  height: 100%;
+  font-size: 16px;
+}
+
 body {
   height: 100%;
   font-family: v.$font-sans;
   background: v.$color-bg;
   color: v.$color-text;
-  font-size: 13px;
+  font-size: v.$font-size-base;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }

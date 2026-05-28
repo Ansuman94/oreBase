@@ -31,6 +31,7 @@ export { FilterGroup } from './FilterGroup/FilterGroup';
 
 // Organisms / Cards
 export { HomeCard } from './HomeCard/HomeCard';
+export type { HomeCardIconVariant } from './HomeCard/HomeCard';
 export { ResultCard } from './ResultCard/ResultCard';
 export { SupplierCard } from './SupplierCard/SupplierCard';
 export { RouteCard } from './RouteCard/RouteCard';

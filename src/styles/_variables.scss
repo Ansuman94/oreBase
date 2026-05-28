@@ -45,6 +45,17 @@ $color-blue-border:  #90B8E8;
 $font-sans: 'DM Sans', sans-serif;
 $font-mono: 'DM Mono', monospace;
 
+// Font sizes
+$font-size-xxs:  10px;    // micro labels, badges, brand tag, section headers
+$font-size-xs:   11px;    // mono values, chips, secondary detail text
+$font-size-sm:   12px;    // secondary info, table data, stat rows
+$font-size-nav:  12.5px;  // sidebar items, buttons
+$font-size-base: 13px;    // body default, most UI text
+$font-size-md:   14px;    // descriptive text, detail panel headers
+$font-size-lg:   15px;    // brand name, primary headings
+$font-size-xl:   22px;    // stat numbers, kpi values
+$font-size-hero: 36px;    // hero h1
+
 // ── Spacing (rem, 16 px base) ─────────────────────────────────────────────────
 
 $space-1:   0.125rem;   //  2px
@@ -69,10 +80,11 @@ $space-60:  3.75rem;    // 60px
 
 // ── Layout tokens ─────────────────────────────────────────────────────────────
 
-$nav-height:      3.375rem;   // 54px
-$sidebar-width:   13.125rem;  // 210px
-$filter-width:    13.75rem;   // 220px
-$detail-width:    23.125rem;  // 370px
+$nav-height:               3.375rem;  // 54px
+$sidebar-width:            13.125rem; // 210px
+$sidebar-collapsed-width:  3rem;      // 48px
+$filter-width:             13.75rem;  // 220px
+$detail-width:             23.125rem; // 370px
 
 // ── Metal colors ──────────────────────────────────────────────────────────────
 

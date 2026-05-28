@@ -6,9 +6,10 @@ import './NavBar.scss';
 interface NavBarProps {
   onSearch?: (q: string) => void;
   onAiClick?: () => void;
+  showSearch?: boolean;
 }
 
-export function NavBar({ onSearch, onAiClick }: NavBarProps) {
+export function NavBar({ onSearch, onAiClick, showSearch = true }: NavBarProps) {
   return (
     <nav className="navbar">
       <div className="navbar__brand">
@@ -27,7 +28,9 @@ export function NavBar({ onSearch, onAiClick }: NavBarProps) {
       </div>
 
       <div className="navbar__center">
-        <SearchBar placeholder="Search minerals, ore types, process routes…" onSearch={onSearch} showButton />
+        {showSearch && (
+          <SearchBar placeholder="Search minerals, ore types, process routes…" onSearch={onSearch} showButton />
+        )}
         <Button variant="ghost" onClick={onAiClick}>✦ AI Search</Button>
       </div>
 
