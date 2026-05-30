@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavBar } from '../../components/NavBar/NavBar';
 import { Sidebar } from '../../components/Sidebar/Sidebar';
+import { fetchStats } from '../../api/stats';
+import type { AppStats } from '../../api/stats';
+import { useAuth } from '../../contexts/AuthContext';
 import './AppLayout.scss';
 
 const NAV_SECTIONS = [
@@ -111,6 +114,24 @@ const NAV_SECTIONS = [
   },
 ];
 
+const ADMIN_SECTION = {
+  label: 'Admin',
+  items: [
+    {
+      id: 'users',
+      label: 'User Management',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          <path d="M16 3.13a4 4 0 010 7.75" />
+        </svg>
+      ),
+    },
+  ],
+};
+
 const ROUTE_MAP: Record<string, string> = {
   search: '/search',
   minerals: '/minerals',
@@ -120,6 +141,7 @@ const ROUTE_MAP: Record<string, string> = {
   planner: '/planner',
   predictor: '/predictor',
   'ai-search': '/ai-search',
+  users: '/users',
 };
 
 interface AppLayoutProps {
@@ -129,7 +151,25 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [stats, setStats]           = useState<AppStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats()
+      .then(setStats)
+      .catch(() => {})
+      .finally(() => setStatsLoading(false));
+  }, []);
+
+  const badgeOverrides: Record<string, string> = stats ? {
+    minerals:  stats.minerals.toLocaleString(),
+    processes: stats.processRoutes.toLocaleString(),
+    suppliers: stats.suppliers.toLocaleString(),
+  } : {};
+
+  const BADGE_ITEMS = new Set(['minerals', 'processes', 'suppliers']);
 
   const activeId =
     Object.entries(ROUTE_MAP).find(([, path]) =>
@@ -146,7 +186,16 @@ export function AppLayout({ children }: AppLayoutProps) {
       <NavBar showSearch={!['/search', '/minerals', '/processes', '/suppliers', '/planner', '/predictor'].includes(location.pathname)} />
       <div className="app-layout__body">
         <Sidebar
-          sections={NAV_SECTIONS.map(s => ({ ...s, items: s.items.filter(i => !i.hidden) }))}
+          sections={[...NAV_SECTIONS, ...(user?.role === 'admin' ? [ADMIN_SECTION] : [])].map(s => ({
+            ...s,
+            items: s.items
+              .filter(i => !('hidden' in i) || !i.hidden)
+              .map(i => ({
+                ...i,
+                badge:        'badge' in i ? (badgeOverrides[i.id] ?? i.badge) : undefined,
+                badgeLoading: statsLoading && BADGE_ITEMS.has(i.id),
+              })),
+          }))}
           activeId={activeId}
           onNav={handleNav}
           collapsed={sidebarCollapsed}

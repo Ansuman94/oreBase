@@ -7,6 +7,7 @@ export interface SidebarNavItem {
   label: string;
   icon: React.ReactNode;
   badge?: string | number;
+  badgeLoading?: boolean;
 }
 
 interface SidebarSection {
@@ -51,6 +52,7 @@ export function Sidebar({ sections, activeId, onNav, stats, collapsed = false, o
                 icon={item.icon}
                 label={item.label}
                 badge={item.badge}
+                badgeLoading={item.badgeLoading}
                 active={activeId === item.id}
                 collapsed={collapsed}
                 onClick={() => onNav(item.id)}

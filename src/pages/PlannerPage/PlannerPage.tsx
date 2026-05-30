@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { ProcessRoute } from '../../data/routes';
 import { fetchProcessRoutes } from '../../api/processes';
 import { RouteCard } from '../../components/RouteCard/RouteCard';
@@ -98,6 +99,8 @@ function scoreRoute(r: ProcessRoute, oreType: string, grain: string, hasAs: bool
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function PlannerPage() {
+  const location = useLocation();
+  const navigate  = useNavigate();
   const [tab, setTab] = useState<PlannerTab>('screen');
 
   // Tab 1: Route screener — live data
@@ -164,6 +167,18 @@ export function PlannerPage() {
       .then(setAllRoutes)
       .finally(() => setRoutesLoading(false));
   }, []);
+
+  // Pre-select metal + ore type when navigated from mineral detail
+  useEffect(() => {
+    const state = location.state as { metal?: string; oreType?: string } | null;
+    if (!state?.metal) return;
+    navigate(location.pathname, { replace: true, state: null });
+    const t = setTimeout(() => {
+      setSrMetal(state.metal!);
+      if (state.oreType) setSrOreType(state.oreType);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [location.state, location.pathname, navigate]);
 
   // Derived metal + ore-type options from live data
   const availableMetals = useMemo(() => {

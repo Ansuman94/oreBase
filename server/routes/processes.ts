@@ -87,6 +87,61 @@ function mapProcessRoute(row: DbProcessRoute) {
   };
 }
 
+router.get('/recommend', async (req, res) => {
+  const { metal, oreType } = req.query;
+  if (!metal || typeof metal !== 'string' || !oreType || typeof oreType !== 'string') {
+    res.status(400).json({ error: 'metal and oreType query params are required' });
+    return;
+  }
+  try {
+    const rows = await sql`
+      SELECT id, route_name, metal, ore_type, recovery_range_pct,
+             typical_opex_usd_t, energy_kwh_t, water_m3_t, co2_intensity,
+             capex_level, best_application, key_limitation, product, stages, stages_details, source
+      FROM process_routes
+      WHERE metal    ILIKE ${metal}
+        AND ore_type ILIKE ${oreType}
+      ORDER BY
+        COALESCE(
+          CAST(NULLIF(REGEXP_REPLACE(recovery_range_pct, '[^0-9].*', ''), '') AS NUMERIC),
+          0
+        ) DESC
+      LIMIT 5
+    ` as DbProcessRoute[];
+    res.json(rows.map(mapProcessRoute));
+  } catch (err) {
+    console.error('GET /api/processes/recommend error:', err);
+    res.status(500).json({ error: 'Failed to fetch recommended routes' });
+  }
+});
+
+router.get('/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q || typeof q !== 'string') {
+    res.status(400).json({ error: 'Query parameter q is required' });
+    return;
+  }
+  try {
+    const rows = await sql`
+      SELECT id, route_name, metal, ore_type, recovery_range_pct,
+             typical_opex_usd_t, energy_kwh_t, water_m3_t, co2_intensity,
+             capex_level, best_application, key_limitation, product, stages, stages_details, source
+      FROM process_routes
+      WHERE route_name        ILIKE ${'%' + q + '%'}
+         OR metal             ILIKE ${'%' + q + '%'}
+         OR ore_type          ILIKE ${'%' + q + '%'}
+         OR best_application  ILIKE ${'%' + q + '%'}
+         OR key_limitation    ILIKE ${'%' + q + '%'}
+      ORDER BY route_name
+      LIMIT 30
+    ` as DbProcessRoute[];
+    res.json(rows.map(mapProcessRoute));
+  } catch (err) {
+    console.error('GET /api/processes/search error:', err);
+    res.status(500).json({ error: 'Failed to search process routes' });
+  }
+});
+
 router.get('/', async (_req, res) => {
   try {
     const rows = await sql`

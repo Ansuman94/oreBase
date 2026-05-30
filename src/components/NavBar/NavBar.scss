@@ -69,4 +69,79 @@
     gap: v.$space-8;
     flex-shrink: 0;
   }
+
+  &__user-menu {
+    position: relative;
+  }
+
+  &__avatar-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    outline-offset: 2px;
+
+    &:focus-visible { outline: 2px solid v.$color-brand; }
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + v.$space-8);
+    right: 0;
+    min-width: 180px;
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    z-index: 300;
+    overflow: hidden;
+  }
+
+  &__dropdown-header {
+    padding: v.$space-12 v.$space-14;
+    border-bottom: 1px solid v.$color-border;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__dropdown-name {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__dropdown-role {
+    font-size: v.$font-size-xs;
+    color: v.$color-muted;
+    text-transform: capitalize;
+  }
+
+  &__dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    padding: v.$space-10 v.$space-14;
+    background: none;
+    border: none;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    color: v.$color-text;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.1s;
+
+    svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    &:hover { background: v.$color-bg; }
+
+    &--logout { color: #B02020; }
+  }
 }

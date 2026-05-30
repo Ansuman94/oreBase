@@ -37,9 +37,106 @@
   }
 
   &__search-wrap {
+    position: relative;
     width: 100%;
     max-width: 620px;
     margin-bottom: v.$space-12;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+    z-index: 200;
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: v.$color-border transparent;
+
+    &::-webkit-scrollbar       { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: v.$color-border; border-radius: 2px; }
+  }
+
+  &__dropdown-loading,
+  &__dropdown-empty {
+    padding: v.$space-16 v.$space-16;
+    text-align: center;
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+  }
+
+  &__dropdown-group {
+    & + & { border-top: 1px solid v.$color-border-light; }
+  }
+
+  &__dropdown-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: v.$space-8 v.$space-14 v.$space-4;
+  }
+
+  &__dropdown-group-label {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: v.$color-faint;
+  }
+
+  &__dropdown-group-count {
+    font-size: v.$font-size-xxs;
+    color: v.$color-faint;
+    font-family: v.$font-mono;
+  }
+
+  &__dropdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: v.$space-8 v.$space-14;
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: v.$font-sans;
+
+    &:hover { background: v.$color-surface; }
+  }
+
+  &__dropdown-item-name {
+    font-size: v.$font-size-base;
+    color: v.$color-text;
+    font-weight: 500;
+  }
+
+  &__dropdown-item-sub {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+  }
+
+  &__dropdown-more {
+    display: block;
+    width: 100%;
+    padding: v.$space-6 v.$space-14;
+    font-size: v.$font-size-xs;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: v.$font-sans;
+    border-top: 1px solid v.$color-border-light;
+
+    &:hover { text-decoration: underline; }
   }
 
   &__tabs {

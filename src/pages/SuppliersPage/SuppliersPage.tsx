@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { Supplier } from '../../data/suppliers';
 import { fetchSuppliers } from '../../api/suppliers';
 import { Checkbox } from '../../components/Checkbox/Checkbox';
@@ -27,12 +28,38 @@ export function SuppliersPage() {
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   const [detailTab, setDetailTab]         = useState<DetailTab>('details');
 
+  const location = useLocation();
+  const navigate  = useNavigate();
+
   useEffect(() => {
     fetchSuppliers()
       .then(setSuppliers)
       .catch(() => setError('Failed to load suppliers from server.'))
       .finally(() => setLoading(false));
   }, []);
+
+  // Pre-fill search when navigated from search bar
+  useEffect(() => {
+    const state = location.state as { searchQuery?: string } | null;
+    if (!state?.searchQuery) return;
+    navigate(location.pathname, { replace: true, state: null });
+    const timer = setTimeout(() => setSearchText(state.searchQuery!), 0);
+    return () => clearTimeout(timer);
+  }, [location.state, location.pathname, navigate]);
+
+  // Pre-select supplier when navigated from search dropdown
+  useEffect(() => {
+    const state = location.state as { selectSupplierId?: number } | null;
+    if (state?.selectSupplierId == null || suppliers.length === 0) return;
+    const s = suppliers.find(sup => sup.id === state.selectSupplierId);
+    if (!s) return;
+    navigate(location.pathname, { replace: true, state: null });
+    const timer = setTimeout(() => {
+      setSelectedSupplier(s);
+      setDetailTab('details');
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [location.state, suppliers, location.pathname, navigate]);
 
   const availableCategories = useMemo(() => {
     return [...new Set(suppliers.map(s => s.cat))].sort();

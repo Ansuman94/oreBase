@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { ProcessRoute } from '../../data/routes';
 import { fetchProcessRoutes } from '../../api/processes';
 import { Checkbox } from '../../components/Checkbox/Checkbox';
@@ -70,12 +71,24 @@ export function ProcessesPage() {
   const [sortKey, setSortKey] = useState('relevance');
   const [showAllMetals, setShowAllMetals] = useState(false);
 
+  const location = useLocation();
+  const navigate  = useNavigate();
+
   useEffect(() => {
     fetchProcessRoutes()
       .then(setRoutes)
       .catch(() => setError('Failed to load process routes from server.'))
       .finally(() => setLoading(false));
   }, []);
+
+  // Pre-populate search when navigated from search dropdown
+  useEffect(() => {
+    const state = location.state as { searchQuery?: string } | null;
+    if (!state?.searchQuery) return;
+    navigate(location.pathname, { replace: true, state: null });
+    const timer = setTimeout(() => setSearchText(state.searchQuery!), 0);
+    return () => clearTimeout(timer);
+  }, [location.state, location.pathname, navigate]);
 
   const methodCounts = useMemo(() => {
     const map: Record<string, number> = {};

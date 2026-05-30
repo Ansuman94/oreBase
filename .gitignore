@@ -5,7 +5,8 @@ node_modules/
 dist/
 dist-ssr/
 
-# Environment
+# Environment — never commit real secrets
+.env
 .env.local
 .env.*.local
 

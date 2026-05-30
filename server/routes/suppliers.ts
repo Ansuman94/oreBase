@@ -33,6 +33,31 @@ function mapSupplier(row: DbSupplier) {
   };
 }
 
+router.get('/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q || typeof q !== 'string') {
+    res.status(400).json({ error: 'Query parameter q is required' });
+    return;
+  }
+  try {
+    const rows = await sql`
+      SELECT id, supplier_name, category, hq_country, products_services,
+             relevant_process, key_minerals, website, notes
+      FROM suppliers
+      WHERE supplier_name     ILIKE ${'%' + q + '%'}
+         OR category          ILIKE ${'%' + q + '%'}
+         OR products_services ILIKE ${'%' + q + '%'}
+         OR key_minerals      ILIKE ${'%' + q + '%'}
+      ORDER BY supplier_name
+      LIMIT 30
+    ` as DbSupplier[];
+    res.json(rows.map(mapSupplier));
+  } catch (err) {
+    console.error('GET /api/suppliers/search error:', err);
+    res.status(500).json({ error: 'Failed to search suppliers' });
+  }
+});
+
 router.get('/', async (_req, res) => {
   try {
     const rows = await sql`

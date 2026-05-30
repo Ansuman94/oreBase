@@ -1,0 +1,340 @@
+@use '../../styles/variables' as v;
+
+.users-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  // ── Header ──────────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: v.$space-20 v.$space-24;
+    border-bottom: 1px solid v.$color-border;
+    background: v.$color-white;
+    flex-shrink: 0;
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: baseline;
+    gap: v.$space-10;
+  }
+
+  &__title {
+    font-size: v.$font-size-lg;
+    font-weight: 600;
+    color: v.$color-dark;
+    margin: 0;
+  }
+
+  &__count {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    font-family: v.$font-mono;
+  }
+
+  &__add-btn {
+    display: flex;
+    align-items: center;
+    gap: v.$space-6;
+    height: 34px;
+    padding: 0 v.$space-14;
+    background: v.$color-brand;
+    color: v.$color-white;
+    border: none;
+    border-radius: 6px;
+    font-size: v.$font-size-base;
+    font-weight: 600;
+    font-family: v.$font-sans;
+    cursor: pointer;
+    transition: background 0.12s;
+
+    svg { width: 14px; height: 14px; }
+
+    &:hover { background: v.$color-brand-dark; }
+  }
+
+  // ── Body (list + optional panel side by side) ────────────────────────────
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+
+    &--split &__list { border-right: 1px solid v.$color-border; }
+  }
+
+  // ── User list ─────────────────────────────────────────────────────────────
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    padding: v.$space-8 0;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-14;
+    padding: v.$space-12 v.$space-24;
+    border-bottom: 1px solid v.$color-border-light;
+    cursor: pointer;
+    transition: background 0.1s;
+    outline: none;
+
+    &:hover           { background: v.$color-surface; }
+    &:focus-visible   { background: v.$color-surface; }
+    &--active         { background: v.$color-brand-light; }
+  }
+
+  &__row-chevron {
+    width: 16px;
+    height: 16px;
+    color: v.$color-faint;
+    flex-shrink: 0;
+    transition: color 0.1s;
+
+    .users-page__row:hover & { color: v.$color-muted; }
+  }
+
+  &__readonly {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 0 v.$space-12;
+    border: 1px solid v.$color-border-light;
+    border-radius: 5px;
+    font-size: v.$font-size-base;
+    color: v.$color-muted;
+    background: v.$color-bg;
+    font-family: v.$font-mono;
+  }
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    flex-shrink: 0;
+
+    &--viewer  { background: v.$color-blue-light;  color: v.$color-blue; }
+    &--analyst { background: v.$color-amber-light; color: v.$color-amber; }
+    &--admin   { background: v.$color-brand-light; color: v.$color-brand; }
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: v.$font-size-base;
+    font-weight: 500;
+    color: v.$color-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__email {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__role {
+    font-size: v.$font-size-xs;
+    font-weight: 600;
+    text-transform: capitalize;
+    padding: 2px v.$space-8;
+    border-radius: 4px;
+    flex-shrink: 0;
+
+    &--viewer  { background: v.$color-blue-light;  color: v.$color-blue; }
+    &--analyst { background: v.$color-amber-light; color: v.$color-amber; }
+    &--admin   { background: v.$color-brand-light; color: v.$color-brand; }
+  }
+
+  &__date {
+    font-size: v.$font-size-sm;
+    color: v.$color-faint;
+    font-family: v.$font-mono;
+    flex-shrink: 0;
+    width: 96px;
+    text-align: right;
+  }
+
+  &__empty {
+    padding: v.$space-40 v.$space-24;
+    text-align: center;
+    font-size: v.$font-size-base;
+    color: v.$color-muted;
+  }
+
+  // ── Skeletons ─────────────────────────────────────────────────────────────
+  &__skeleton-wrap { padding: v.$space-8 0; }
+
+  &__skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-14;
+    padding: v.$space-12 v.$space-24;
+    border-bottom: 1px solid v.$color-border-light;
+  }
+
+  &__skeleton-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: v.$color-border;
+    flex-shrink: 0;
+    animation: users-shimmer 1.4s ease-in-out infinite;
+  }
+
+  &__skeleton-lines { flex: 1; display: flex; flex-direction: column; gap: v.$space-6; }
+
+  &__skeleton-line {
+    height: 11px;
+    border-radius: 4px;
+    background: v.$color-border;
+    animation: users-shimmer 1.4s ease-in-out infinite;
+
+    &--name  { width: 140px; }
+    &--email { width: 200px; }
+  }
+
+  @keyframes users-shimmer {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.45; }
+  }
+
+  // ── Add user panel ────────────────────────────────────────────────────────
+  &__panel {
+    width: 340px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: v.$color-white;
+  }
+
+  &__panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: v.$space-16 v.$space-20;
+    border-bottom: 1px solid v.$color-border;
+    flex-shrink: 0;
+  }
+
+  &__panel-title {
+    font-size: v.$font-size-md;
+    font-weight: 600;
+    color: v.$color-dark;
+  }
+
+  &__panel-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: v.$color-muted;
+    transition: background 0.1s, color 0.1s;
+
+    svg { width: 16px; height: 16px; }
+
+    &:hover { background: v.$color-surface; color: v.$color-text; }
+  }
+
+  // ── Form ──────────────────────────────────────────────────────────────────
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-18;
+    padding: v.$space-20;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-5;
+  }
+
+  &__label {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: v.$color-text;
+  }
+
+  &__req { color: v.$color-brand; }
+
+  &__input,
+  &__select {
+    height: 38px;
+    padding: 0 v.$space-12;
+    border: 1px solid v.$color-border;
+    border-radius: 5px;
+    font-size: v.$font-size-base;
+    font-family: v.$font-sans;
+    color: v.$color-text;
+    background: v.$color-white;
+    outline: none;
+    transition: border-color 0.12s, box-shadow 0.12s;
+
+    &::placeholder { color: v.$color-faint; }
+
+    &:focus {
+      border-color: v.$color-brand;
+      box-shadow: 0 0 0 3px v.$color-brand-light;
+    }
+  }
+
+  &__select { cursor: pointer; }
+
+  &__role-hint {
+    font-size: v.$font-size-xs;
+    color: v.$color-muted;
+    line-height: 1.5;
+  }
+
+  &__error {
+    font-size: v.$font-size-sm;
+    color: v.$color-red;
+    background: v.$color-red-light;
+    border: 1px solid v.$color-red-border;
+    border-radius: 5px;
+    padding: v.$space-8 v.$space-12;
+  }
+
+  &__submit {
+    height: 38px;
+    background: v.$color-brand;
+    color: v.$color-white;
+    border: none;
+    border-radius: 5px;
+    font-size: v.$font-size-base;
+    font-weight: 600;
+    font-family: v.$font-sans;
+    cursor: pointer;
+    margin-top: v.$space-4;
+    transition: background 0.12s;
+
+    &:hover:not(:disabled) { background: v.$color-brand-dark; }
+    &:disabled             { opacity: 0.6; cursor: not-allowed; }
+  }
+}

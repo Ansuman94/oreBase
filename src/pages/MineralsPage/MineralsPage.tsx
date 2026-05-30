@@ -1,6 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { MineralData } from '../../data/minerals';
 import { fetchMinerals } from '../../api/minerals';
+import { fetchRecommendedRoutes } from '../../api/processes';
+import type { ProcessRoute } from '../../data/routes';
 import { Badge } from '../../components/Badge/Badge';
 import type { BadgeVariant } from '../../components/Badge/Badge';
 import { MetalButton } from '../../components/MetalButton/MetalButton';
@@ -172,6 +175,11 @@ export function MineralsPage() {
   const [selectedMineral, setSelectedMineral] = useState<MineralData | null>(null);
   const [detailTab, setDetailTab] = useState<DetailTab>('props');
   const [showAllMetals, setShowAllMetals] = useState(false);
+  const [recommendedRoutes, setRecommendedRoutes] = useState<ProcessRoute[]>([]);
+  const [routesLoading, setRoutesLoading] = useState(false);
+
+  const location = useLocation();
+  const navigate  = useNavigate();
 
   useEffect(() => {
     fetchMinerals()
@@ -179,6 +187,43 @@ export function MineralsPage() {
       .catch(() => setError('Failed to load minerals from server.'))
       .finally(() => setLoading(false));
   }, []);
+
+  // Pre-fill search when navigated from search bar
+  useEffect(() => {
+    const state = location.state as { searchQuery?: string } | null;
+    if (!state?.searchQuery) return;
+    navigate(location.pathname, { replace: true, state: null });
+    const timer = setTimeout(() => setSearchText(state.searchQuery!), 0);
+    return () => clearTimeout(timer);
+  }, [location.state, location.pathname, navigate]);
+
+  // Pre-select mineral when navigated from search dropdown
+  useEffect(() => {
+    const state = location.state as { selectMineral?: string } | null;
+    if (!state?.selectMineral || minerals.length === 0) return;
+    const m = minerals.find(min => min.name === state.selectMineral);
+    if (!m) return;
+    navigate(location.pathname, { replace: true, state: null });
+    const timer = setTimeout(() => {
+      setSelectedMineral(m);
+      setDetailTab('props');
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [location.state, minerals, location.pathname, navigate]);
+
+  // Fetch recommended process routes whenever a mineral is selected
+  useEffect(() => {
+    if (!selectedMineral) {
+      const t = setTimeout(() => setRecommendedRoutes([]), 0);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setRoutesLoading(true), 0);
+    fetchRecommendedRoutes(selectedMineral.metal_group || selectedMineral.metal, selectedMineral.type)
+      .then(routes => setRecommendedRoutes(routes))
+      .catch(() => setRecommendedRoutes([]))
+      .finally(() => setRoutesLoading(false));
+    return () => clearTimeout(t);
+  }, [selectedMineral]);
 
   const metalCounts = useMemo(() => {
     const map: Record<string, number> = {};
@@ -280,6 +325,24 @@ export function MineralsPage() {
 
   const hasFilters = selectedMetals.size > 0 || selectedTypes.size > 0 || selectedFloats.size > 0 || sgMin || sgMax;
   const tableSortKey = TABLE_SORT_KEYS.has(sortKey) ? (sortKey as keyof MineralRow) : undefined;
+
+  const similarMinerals = useMemo(() => {
+    if (!selectedMineral || minerals.length === 0) return [];
+    const metal = selectedMineral.metal_group || selectedMineral.metal;
+    const type  = selectedMineral.type;
+    const sameMetalAndType = minerals.filter(m =>
+      m.name !== selectedMineral.name &&
+      (m.metal_group || m.metal) === metal &&
+      m.type === type
+    );
+    if (sameMetalAndType.length >= 3) return sameMetalAndType.slice(0, 5);
+    const sameMetal = minerals.filter(m =>
+      m.name !== selectedMineral.name &&
+      (m.metal_group || m.metal) === metal &&
+      !sameMetalAndType.some(s => s.name === m.name)
+    );
+    return [...sameMetalAndType, ...sameMetal].slice(0, 5);
+  }, [minerals, selectedMineral]);
 
   const sgComparisons = useMemo(() => {
     if (!selectedMineral) return [];
@@ -540,14 +603,104 @@ export function MineralsPage() {
                     { label: 'Grade',     value: selectedMineral.grade ? `${selectedMineral.grade}%` : '—' },
                     { label: 'Leaching',  value: selectedMineral.leach || '—' },
                   ]} />
+
+                  <div className="minerals-page__chart-title minerals-page__chart-title--spaced">
+                    Recommended processing route
+                  </div>
+
+                  {routesLoading && (
+                    <div className="minerals-page__seq-skeleton">
+                      {[0, 1, 2].map(i => (
+                        <div key={i} className="minerals-page__seq-skeleton-row">
+                          <div className="minerals-page__seq-skeleton-circle" />
+                          <div className="minerals-page__seq-skeleton-line" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {!routesLoading && recommendedRoutes.length === 0 && (
+                    <p className="minerals-page__detail-notes">
+                      No process routes found for {selectedMineral.type} {selectedMineral.metal} ores.
+                    </p>
+                  )}
+
+                  {!routesLoading && recommendedRoutes[0] && (
+                    <div className="minerals-page__seq-subtitle">
+                      <span className="minerals-page__seq-route-name">{recommendedRoutes[0].name}</span>
+                      {recommendedRoutes[0].recovery && (
+                        <span className="minerals-page__seq-route-recovery">
+                          Recovery {recommendedRoutes[0].recovery.endsWith('%') ? recommendedRoutes[0].recovery : `${recommendedRoutes[0].recovery}%`}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {!routesLoading && recommendedRoutes[0] && recommendedRoutes[0].stages.length > 0 && (
+                    <ol className="minerals-page__seq-list">
+                      {recommendedRoutes[0].stages.map((stage, i) => (
+                        <li key={i} className="minerals-page__seq-step">
+                          <span className="minerals-page__seq-num">{i + 1}</span>
+                          <span className="minerals-page__seq-text">{stage}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                 </>
               )}
 
               {detailTab === 'notes' && (
-                <p className="minerals-page__detail-notes">
-                  {selectedMineral.notes || 'No additional notes available.'}
-                </p>
+                <>
+                  <div className="minerals-page__chart-title">Technical Notes</div>
+                  <div className="minerals-page__notes-callout">
+                    <p className="minerals-page__detail-notes">
+                      {selectedMineral.notes || 'No additional notes available.'}
+                    </p>
+                  </div>
+
+                  {similarMinerals.length > 0 && (
+                    <>
+                      <div className="minerals-page__chart-title minerals-page__chart-title--spaced">
+                        Similar Minerals
+                      </div>
+                      <div className="minerals-page__similar-list">
+                        {similarMinerals.map(m => (
+                          <button
+                            key={m.name}
+                            className="minerals-page__similar-row"
+                            onClick={() => { setSelectedMineral(m); setDetailTab('props'); }}
+                          >
+                            <span
+                              className="minerals-page__similar-avatar"
+                              style={{ background: metalColor(m.metal_group || m.metal) }}
+                            >
+                              {(m.metal_group || m.metal).slice(0, 2)}
+                            </span>
+                            <span className="minerals-page__similar-info">
+                              <span className="minerals-page__similar-name">{m.name}</span>
+                              <span className="minerals-page__similar-formula">{m.formula}</span>
+                            </span>
+                            <Badge variant={getTypeVariant(m.type)} label={m.type} />
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
               )}
+            </div>
+
+            <div className="minerals-page__detail-footer">
+              <button
+                className="minerals-page__detail-footer-btn minerals-page__detail-footer-btn--primary"
+                onClick={() => navigate('/planner', { state: {
+                  selectMineral: selectedMineral.name,
+                  metal: selectedMineral.metal_group || selectedMineral.metal,
+                  oreType: selectedMineral.type,
+                } })}
+              >
+                Plan Extraction
+              </button>
             </div>
           </>
         )}

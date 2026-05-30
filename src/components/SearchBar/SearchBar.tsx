@@ -7,6 +7,9 @@ interface SearchBarProps {
   showButton?: boolean;
   size?: 'sm' | 'lg';
   variant?: 'hero';
+  value?: string;
+  onChange?: (value: string) => void;
+  onEscape?: () => void;
 }
 
 export function SearchBar({
@@ -15,11 +18,22 @@ export function SearchBar({
   showButton = false,
   size = 'sm',
   variant,
+  value: controlledValue,
+  onChange,
+  onEscape,
 }: SearchBarProps) {
-  const [value, setValue] = useState('');
+  const [internalValue, setInternalValue] = useState('');
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : internalValue;
+
+  function handleChange(v: string) {
+    if (!isControlled) setInternalValue(v);
+    onChange?.(v);
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') onSearch?.(value);
+    if (e.key === 'Escape') onEscape?.();
   }
 
   if (variant === 'hero') {
@@ -33,7 +47,7 @@ export function SearchBar({
           <input
             value={value}
             placeholder={placeholder}
-            onChange={e => setValue(e.target.value)}
+            onChange={e => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
           />
           <button className="search-bar__btn" onClick={() => onSearch?.(value)}>
@@ -54,7 +68,7 @@ export function SearchBar({
         <input
           value={value}
           placeholder={placeholder}
-          onChange={e => setValue(e.target.value)}
+          onChange={e => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
         />
       </div>

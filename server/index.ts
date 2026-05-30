@@ -1,18 +1,37 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { mineralsRouter } from './routes/minerals';
+import cookieParser from 'cookie-parser';
+import { mineralsRouter }  from './routes/minerals';
 import { suppliersRouter } from './routes/suppliers';
 import { processesRouter } from './routes/processes';
+import { statsRouter }     from './routes/stats';
+import { authRouter }      from './routes/auth';
+import { usersRouter }     from './routes/users';
+import { requireAuth, requireRole } from './middleware/auth';
 
 const app = express();
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173'] }));
+app.use(cors({
+  origin:      ['http://localhost:5173', 'http://localhost:4173'],
+  credentials: true,
+}));
 app.use(express.json());
+app.use(cookieParser());
 
-app.use('/api/minerals', mineralsRouter);
-app.use('/api/suppliers', suppliersRouter);
-app.use('/api/processes', processesRouter);
+// Public — auth endpoints (no token required)
+app.use('/api/auth', authRouter);
+
+// viewer+ — read-only data pages
+app.use('/api/minerals',  requireAuth, mineralsRouter);
+app.use('/api/suppliers', requireAuth, suppliersRouter);
+app.use('/api/stats',     requireAuth, statsRouter);
+
+// analyst+ — planner / predictor data
+app.use('/api/processes', requireAuth, requireRole('analyst'), processesRouter);
+
+// admin only — user management
+app.use('/api/users', requireAuth, requireRole('admin'), usersRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });

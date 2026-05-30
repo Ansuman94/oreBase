@@ -204,8 +204,7 @@
     border-left: 1px solid v.$color-border;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   &__detail-empty {
@@ -310,6 +309,47 @@
   &__detail-body {
     padding: v.$space-16;
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__detail-footer {
+    display: flex;
+    gap: v.$space-8;
+    padding: v.$space-12 v.$space-16;
+    border-top: 1px solid v.$color-border-light;
+    flex-shrink: 0;
+    background: v.$color-white;
+  }
+
+  &__detail-footer-btn {
+    flex: 1;
+    padding: v.$space-8 v.$space-10;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid v.$color-border;
+    background: v.$color-white;
+    color: v.$color-text;
+    transition: background 0.12s, border-color 0.12s;
+
+    &:hover {
+      background: v.$color-surface;
+      border-color: v.$color-muted;
+    }
+
+    &--primary {
+      background: v.$color-brand;
+      color: v.$color-white;
+      border-color: v.$color-brand;
+
+      &:hover {
+        background: v.$color-brand-dark;
+        border-color: v.$color-brand-dark;
+      }
+    }
   }
 
   &__chart-title {
@@ -319,6 +359,16 @@
     letter-spacing: 0.5px;
     color: v.$color-faint;
     margin: v.$space-20 0 v.$space-10;
+
+    &--spaced { margin-top: v.$space-24; }
+  }
+
+  &__notes-callout {
+    border-left: 3px solid v.$color-brand;
+    background: v.$color-brand-light;
+    border-radius: 0 4px 4px 0;
+    padding: v.$space-12 v.$space-14;
+    margin-bottom: v.$space-8;
   }
 
   &__detail-notes {
@@ -326,5 +376,172 @@
     color: v.$color-sub;
     line-height: 1.6;
     margin: 0;
+  }
+
+  // ── Similar minerals ─────────────────────────────────────────────────────────
+
+  &__similar-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__similar-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-10;
+    padding: v.$space-10 v.$space-4;
+    border: none;
+    border-bottom: 1px solid v.$color-border-light;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-family: v.$font-sans;
+    border-radius: 4px;
+    transition: background 0.1s;
+
+    &:last-child { border-bottom: none; }
+    &:hover      { background: v.$color-surface; }
+  }
+
+  &__similar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: v.$color-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: v.$font-size-xxs;
+    font-weight: 700;
+    font-family: v.$font-mono;
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+
+  &__similar-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__similar-name {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: v.$color-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__similar-formula {
+    font-size: v.$font-size-xxs;
+    font-family: v.$font-mono;
+    color: v.$color-muted;
+  }
+
+  // ── Recommended processing sequence ─────────────────────────────────────────
+
+  &__seq-skeleton {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__seq-skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-12;
+    padding: v.$space-12 0;
+    border-bottom: 1px solid v.$color-border-light;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  &__seq-skeleton-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, v.$color-border 25%, v.$color-border-light 50%, v.$color-border 75%);
+    background-size: 200% 100%;
+    animation: seq-shimmer 1.4s infinite linear;
+  }
+
+  &__seq-skeleton-line {
+    height: 12px;
+    border-radius: 4px;
+    width: 65%;
+    background: linear-gradient(90deg, v.$color-border 25%, v.$color-border-light 50%, v.$color-border 75%);
+    background-size: 200% 100%;
+    animation: seq-shimmer 1.4s infinite linear;
+  }
+
+  @keyframes seq-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  &__seq-subtitle {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    margin-bottom: v.$space-10;
+    flex-wrap: wrap;
+  }
+
+  &__seq-route-name {
+    font-size: v.$font-size-sm;
+    color: v.$color-sub;
+    font-style: italic;
+  }
+
+  &__seq-route-recovery {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: v.$color-white;
+    background: #2D6048;
+    border-radius: 3px;
+    padding: 1px v.$space-6;
+    font-family: v.$font-mono;
+    font-style: normal;
+  }
+
+  &__seq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__seq-step {
+    display: flex;
+    align-items: center;
+    gap: v.$space-12;
+    padding: v.$space-12 0;
+    border-bottom: 1px solid v.$color-border-light;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  &__seq-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: v.$color-brand;
+    color: v.$color-white;
+    font-size: v.$font-size-sm;
+    font-weight: 700;
+    font-family: v.$font-sans;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__seq-text {
+    font-size: v.$font-size-sm;
+    color: v.$color-text;
+    line-height: 1.4;
   }
 }

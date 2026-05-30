@@ -7,7 +7,7 @@ interface HomeCardProps {
   icon: React.ReactNode;
   iconVariant?: HomeCardIconVariant;
   name: string;
-  sub: string;
+  sub: React.ReactNode;
   onClick?: () => void;
 }
 
