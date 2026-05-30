@@ -41,6 +41,10 @@ export { ChatMessage } from './ChatMessage/ChatMessage';
 export type { MessageRole } from './ChatMessage/ChatMessage';
 export { DetailPanel } from './DetailPanel/DetailPanel';
 
+// Feedback / Loading
+export { PageLoader } from './PageLoader/PageLoader';
+export type { PageLoaderVariant } from './PageLoader/PageLoader';
+
 // Layout
 export { NavBar } from './NavBar/NavBar';
 export { Sidebar } from './Sidebar/Sidebar';

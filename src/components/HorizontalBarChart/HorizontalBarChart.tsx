@@ -26,7 +26,7 @@ export function HorizontalBarChart({ rows }: HorizontalBarChartProps) {
                 style={{ width: `${pct}%`, background: row.color }}
               />
             </div>
-            <div className="hbar-chart__value">{row.value}</div>
+            <div className="hbar-chart__value">{row.value.toFixed(2)}</div>
           </div>
         );
       })}

@@ -5,6 +5,7 @@ import { MineralsPage } from './pages/MineralsPage/MineralsPage';
 import { ProcessesPage } from './pages/ProcessesPage/ProcessesPage';
 import { SuppliersPage } from './pages/SuppliersPage/SuppliersPage';
 import { PlannerPage } from './pages/PlannerPage/PlannerPage';
+import { PredictorPage } from './pages/PredictorPage/PredictorPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/processes" element={<AppLayout><ProcessesPage /></AppLayout>} />
         <Route path="/suppliers" element={<AppLayout><SuppliersPage /></AppLayout>} />
         <Route path="/planner" element={<AppLayout><PlannerPage /></AppLayout>} />
+        <Route path="/predictor" element={<AppLayout><PredictorPage /></AppLayout>} />
       </Routes>
     </BrowserRouter>
   );

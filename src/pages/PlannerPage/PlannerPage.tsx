@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
+import type { ProcessRoute } from '../../data/routes';
+import { fetchProcessRoutes } from '../../api/processes';
 import { RouteCard } from '../../components/RouteCard/RouteCard';
 import './PlannerPage.scss';
 
@@ -6,123 +8,22 @@ import './PlannerPage.scss';
 
 type PlannerTab = 'screen' | 'opex' | 'nsr';
 
-interface PlannerRoute {
-  id: string;
-  name: string;
-  cat: string;
-  rec: number;
-  recStr: string;
-  opex: string;
-  energy: string;
-  water: string;
-  capex: string;
-  co2: string;
-  stages: string[];
-  pros: string[];
-  cons: string[];
-  suit: Record<string, boolean>;
-  fgPen: boolean;
-  asPen: boolean;
-  wsPen: boolean;
-  recs: Record<string, boolean>;
-}
+interface ScoredRoute extends ProcessRoute { score: number; suitable: boolean; }
 
-interface ScoredRoute extends PlannerRoute { score: number; }
+// ── Metal display names ───────────────────────────────────────────────────────
 
-// ── Route screener data ───────────────────────────────────────────────────────
-
-const ALL_ROUTES: Record<string, Record<string, PlannerRoute[]>> = {
-  Copper: {
-    Sulfide: [
-      { id:'cu-s-fl', name:'Froth flotation + flash smelting', cat:'Pyrometallurgy', rec:87, recStr:'84–91%', opex:'$24–34/t', energy:'18 kWh/t', water:'2.1 m³/t', capex:'High', co2:'High',
-        stages:['Primary crushing','SAG + ball mill (P80 75 µm)','Froth flotation (xanthate, pH 11)','Roasting (high-As ore)','Flash smelting','Electrorefining → 99.99% Cu'],
-        pros:['Highest Cu recovery for sulfide','Proven globally at scale','Handles fine grain well with regrind'],
-        cons:['High energy and capex','SO₂ emissions require scrubbing'],
-        suit:{Sulfide:true,Oxide:false,'Mixed sulfide-oxide':true,'Brine / evaporite':false}, fgPen:false, asPen:true, wsPen:false, recs:{Sulfide:true} },
-      { id:'cu-s-bio', name:'Bioleaching (low-grade sulfide)', cat:'Hydrometallurgy', rec:62, recStr:'55–68%', opex:'$8–14/t', energy:'4 kWh/t', water:'0.9 m³/t', capex:'Low', co2:'Very low',
-        stages:['ROM stacking on lined pad','Bacterial inoculation','Bioleach cycle 90–180 days','SX-EW → 99.99% Cu cathode'],
-        pros:['Very low OPEX and capex','Minimal energy','Suits disseminated low-grade'],
-        cons:['Low recovery','Slow kinetics (90–180 days)','Not for fine grain'],
-        suit:{Sulfide:true,Oxide:false,'Mixed sulfide-oxide':false,'Brine / evaporite':false}, fgPen:true, asPen:true, wsPen:false, recs:{Sulfide:false} },
-      { id:'cu-s-pox', name:'Pressure oxidation + HPAL', cat:'Hydrometallurgy', rec:91, recStr:'88–94%', opex:'$32–48/t', energy:'28 kWh/t', water:'2.8 m³/t', capex:'Very high', co2:'High',
-        stages:['Grinding to P80 45 µm','Flotation to sulfide concentrate','Pressure oxidation 190°C / 700 kPa O₂','Atmospheric acid leach','CCD wash','SX-EW → 99.99% Cu'],
-        pros:['Best for refractory/high-As sulfide','Fixes arsenic as stable arsenate','High recovery'],
-        cons:['Very high capex','Complex autoclave ops','High energy and water'],
-        suit:{Sulfide:true,Oxide:false,'Mixed sulfide-oxide':false,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:true, recs:{Sulfide:false} },
-    ],
-    Oxide: [
-      { id:'cu-ox-hl', name:'Heap leach SX-EW', cat:'Hydrometallurgy', rec:78, recStr:'72–84%', opex:'$10–16/t', energy:'7 kWh/t', water:'1.3 m³/t', capex:'Low–medium', co2:'Low',
-        stages:['Crush to 19 mm','Agglomeration with H₂SO₄','Heap stacking','H₂SO₄ leach 60–90 days','SX extraction','Electrowinning → 99.99% Cu'],
-        pros:['Lowest capex of Cu routes','Proven for oxide Cu globally','Low energy'],
-        cons:['Poor for sulfide mineralogy','Acid consumption high for carbonate gangue','Slow cycle'],
-        suit:{Oxide:true,'Mixed sulfide-oxide':true,Sulfide:false,'Brine / evaporite':false}, fgPen:true, asPen:false, wsPen:false, recs:{Oxide:true} },
-      { id:'cu-ox-vl', name:'Vat leach SX-EW', cat:'Hydrometallurgy', rec:85, recStr:'80–90%', opex:'$16–24/t', energy:'9 kWh/t', water:'1.8 m³/t', capex:'Medium', co2:'Low',
-        stages:['Crush to 25 mm','Vat loading and acid filling','H₂SO₄ leach 24–72 hr','PLS clarification','SX extraction','Electrowinning'],
-        pros:['Higher recovery than heap','Faster cycle','Better process control'],
-        cons:['Higher capex than heap','Labour intensive','Less suited to very low grade'],
-        suit:{Oxide:true,'Mixed sulfide-oxide':false,Sulfide:false,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:false, recs:{Oxide:false} },
-    ],
-    'Mixed sulfide-oxide': [
-      { id:'cu-mix-sp', name:'Split stream: flotation + heap leach', cat:'Combined', rec:82, recStr:'78–86%', opex:'$20–30/t', energy:'13 kWh/t', water:'1.8 m³/t', capex:'High', co2:'Medium',
-        stages:['Crush + screen at 6 mm','Fine fraction → flotation circuit','Coarse fraction → acid heap pad','Flotation concentrate → smelter','Heap PLS → SX-EW','Combined cathode production'],
-        pros:['Maximises recovery across both mineral types','Single cathode product','Proven at African operations'],
-        cons:['Complex dual-circuit operation','High capex','Careful ore blending control needed'],
-        suit:{'Mixed sulfide-oxide':true,Sulfide:false,Oxide:false,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:false, recs:{'Mixed sulfide-oxide':true} },
-    ],
-  },
-  Lithium: {
-    Sulfide: [
-      { id:'li-s-conv', name:'DMS + flotation + acid leach (conventional)', cat:'Hydrometallurgy', rec:84, recStr:'80–88%', opex:'$3,800–5,200/t LCE', energy:'28 kWh/t', water:'3.2 m³/t', capex:'High', co2:'High',
-        stages:['Crush to P80 1 mm','Dense media separation (SG 2.85)','Flotation, amine collector, pH 7','Calcination at 1050°C (α→β)','H₂SO₄ acid roast at 250°C','Purification + LiOH crystallisation'],
-        pros:['Proven at scale','Good recovery for high-grade spodumene','Battery-grade LiOH direct'],
-        cons:['Calcination at 1050°C = major energy cost','High capex','SO₄ waste streams'],
-        suit:{Sulfide:true,'Brine / evaporite':false,Oxide:false,'Mixed sulfide-oxide':false}, fgPen:false, asPen:false, wsPen:false, recs:{Sulfide:true} },
-    ],
-    'Brine / evaporite': [
-      { id:'li-b-dle', name:'Direct lithium extraction (DLE)', cat:'Emerging', rec:92, recStr:'>90%', opex:'$2,800–4,200/t LCE', energy:'6 kWh/t', water:'0.3 m³/t', capex:'Medium', co2:'Very low',
-        stages:['Brine pumping (30–200 m)','Pre-treatment (Mg/Ca/B removal)','DLE adsorption on ion-selective sorbent','Elution + purification','Concentration + Li₂CO₃ / LiOH crystallisation'],
-        pros:['Highest recovery (>90%)','90% less water than evaporation','Days vs months processing time'],
-        cons:['Emerging at large scale','Sorbent regeneration adds OPEX'],
-        suit:{'Brine / evaporite':true,Sulfide:false,Oxide:false,'Mixed sulfide-oxide':false}, fgPen:false, asPen:false, wsPen:false, recs:{'Brine / evaporite':true} },
-      { id:'li-b-evap', name:'Solar evaporation pond (conventional)', cat:'Hydrometallurgy', rec:50, recStr:'40–60%', opex:'$1,800–3,000/t LCE', energy:'2 kWh/t', water:'12 m³/t', capex:'Low', co2:'Very low',
-        stages:['Brine pumping to lined ponds','Multi-stage solar evaporation 12–24 months','KCl/NaCl/MgSO₄ harvesting','Li brine concentration to 6%','Soda ash precipitation → Li₂CO₃'],
-        pros:['Very low OPEX for low Mg:Li brines','Proven at Atacama scale','Minimal energy'],
-        cons:['Low recovery (40–60%)','12–24 month cycle time','High water evaporation — ESG concern'],
-        suit:{'Brine / evaporite':true,Sulfide:false,Oxide:false,'Mixed sulfide-oxide':false}, fgPen:false, asPen:false, wsPen:true, recs:{'Brine / evaporite':false} },
-    ],
-  },
-  Gold: {
-    Sulfide: [
-      { id:'au-cil', name:'Grinding + CIL cyanidation', cat:'Hydrometallurgy', rec:89, recStr:'85–93%', opex:'$18–28/t', energy:'15 kWh/t', water:'1.8 m³/t', capex:'Medium', co2:'Medium',
-        stages:['Crushing + SAG mill (P80 75 µm)','Gravity concentration (Knelson)','CIL cyanidation tanks (24 hr)','Carbon elution (AARL circuit)','Electrowinning + smelt → doré bar'],
-        pros:['Standard gold processing — well understood','Good for free-milling ore','Lower capex than refractory routes'],
-        cons:['Cyanide management required','Poor recovery for refractory gold','NaCN cost variable'],
-        suit:{Sulfide:true,'Mixed sulfide-oxide':true,Oxide:true,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:false, recs:{Sulfide:true} },
-      { id:'au-pox', name:'Pressure oxidation + CIL (refractory)', cat:'Hydrometallurgy', rec:93, recStr:'90–96%', opex:'$30–45/t', energy:'26 kWh/t', water:'2.5 m³/t', capex:'Very high', co2:'High',
-        stages:['Grinding + flotation → Au sulfide concentrate','POX at 200°C — sulfide oxidation >95%','Neutralisation','CIL cyanidation of oxidised calcine','Carbon elution + smelt → doré'],
-        pros:['Best recovery for refractory Au','Fully oxidised calcine amenable to cyanidation'],
-        cons:['Very high capex','Complex As and acid management'],
-        suit:{Sulfide:true,'Mixed sulfide-oxide':false,Oxide:false,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:true, recs:{Sulfide:false} },
-    ],
-  },
-  Cobalt: {
-    Sulfide: [
-      { id:'co-pox', name:'Flotation + POX + atmospheric leach', cat:'Hydrometallurgy', rec:80, recStr:'75–85%', opex:'$32–48/t', energy:'26 kWh/t', water:'2.8 m³/t', capex:'High', co2:'High',
-        stages:['Grinding to P80 45 µm','Flotation (xanthate + dithiophosphate)','POX at 190°C — As fixation as FeAsO₄','Atmospheric H₂SO₄ leach pH 2.0','Cobalt SX (Cyanex 272)','Electrowinning → Co cathode 99.8%'],
-        pros:['Best Co recovery for As-bearing sulfide','Arsenic fixed stably as scorodite','Battery-grade cobalt product'],
-        cons:['High capex for autoclave','Complex As/effluent management'],
-        suit:{Sulfide:true,'Mixed sulfide-oxide':false,Oxide:false,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:true, recs:{Sulfide:true} },
-    ],
-  },
-  Nickel: {
-    Sulfide: [
-      { id:'ni-fl', name:'Flotation + smelting + refining', cat:'Pyrometallurgy', rec:84, recStr:'80–88%', opex:'$18–28/t', energy:'20 kWh/t', water:'2.0 m³/t', capex:'High', co2:'High',
-        stages:['Grinding to P80 75 µm','Flotation (xanthate + dithiophosphate, pH 9)','Ni-Cu-PGM concentrate','Smelting (electric furnace)','Converting to Ni matte','Refining → Ni cathode'],
-        pros:['Standard for pentlandite Ni','Co-produces Cu and PGM credits','Well-proven globally'],
-        cons:['SO₂ emissions from smelting','High capex'],
-        suit:{Sulfide:true,'Mixed sulfide-oxide':false,Oxide:false,'Brine / evaporite':false}, fgPen:false, asPen:false, wsPen:false, recs:{Sulfide:true} },
-    ],
-  },
+const METAL_LABELS: Record<string, string> = {
+  Cu:'Copper', Li:'Lithium', Au:'Gold', Co:'Cobalt', Ni:'Nickel',
+  Ag:'Silver', Fe:'Iron', Zn:'Zinc', Pb:'Lead', Mn:'Manganese',
+  Mo:'Molybdenum', W:'Tungsten', Sn:'Tin', Ti:'Titanium', V:'Vanadium',
+  Pt:'Platinum', PGM:'PGM', REE:'REE', Al:'Aluminium', Cr:'Chromium',
+  U:'Uranium', Bi:'Bismuth', Sb:'Antimony', Sc:'Scandium', Y:'Yttrium',
+  Nb:'Niobium', Ta:'Tantalum', B:'Boron', Mg:'Magnesium', Si:'Silicon',
+  P:'Phosphorus', K:'Potassium', Sr:'Strontium', Ba:'Barium',
+  Zr:'Zirconium', Ge:'Germanium', Ga:'Gallium', In:'Indium',
+  Se:'Selenium', Te:'Tellurium', Cs:'Caesium', Rb:'Rubidium',
+  Hg:'Mercury', Cd:'Cadmium', Re:'Rhenium', Be:'Beryllium',
+  C:'Graphite', F:'Fluorite',
 };
 
 // ── OPEX lookup tables ────────────────────────────────────────────────────────
@@ -182,14 +83,15 @@ function getCo2Style(co2: string): { color: string; bg: string } {
   return { color:'#1A4F8A', bg:'#E3ECF7' };
 }
 
-function scoreRoute(r: PlannerRoute, type: string, grain: string, hasAs: boolean, ws: boolean, lowco2: boolean): number {
-  let s = r.rec;
-  if (!r.suit[type]) s -= 40;
-  if (grain.includes('Fine') && r.fgPen) s -= 12;
-  if (hasAs && r.asPen) s -= 15;
-  if (ws && r.wsPen) s -= 10;
+function scoreRoute(r: ProcessRoute, oreType: string, grain: string, hasAs: boolean, ws: boolean, lowco2: boolean): number {
+  const n = r.name.toLowerCase();
+  let s = r.recoveryNum;
+  if (r.oreType !== oreType) s -= 35;
+  if (grain.includes('Fine') && (n.includes('heap leach') || n.includes('dump leach') || n.includes('in-situ'))) s -= 12;
+  if (hasAs && n.includes('heap leach') && !n.includes('pox') && !n.includes('biox') && !n.includes('roast')) s -= 15;
+  if (ws && (n.includes('hpal') || n.includes('rkef') || n.includes('smelt') || n.includes('pox'))) s -= 10;
   if (lowco2 && r.co2 === 'High') s -= 8;
-  if (lowco2 && r.co2 === 'Very low') s += 5;
+  if (lowco2 && (r.co2 === 'Very low' || r.co2 === 'Low')) s += 5;
   return s;
 }
 
@@ -198,9 +100,11 @@ function scoreRoute(r: PlannerRoute, type: string, grain: string, hasAs: boolean
 export function PlannerPage() {
   const [tab, setTab] = useState<PlannerTab>('screen');
 
-  // Tab 1: Route screener
-  const [srMetal,     setSrMetal]     = useState('Copper');
-  const [srOreType,   setSrOreType]   = useState('Sulfide');
+  // Tab 1: Route screener — live data
+  const [allRoutes,     setAllRoutes]     = useState<ProcessRoute[]>([]);
+  const [routesLoading, setRoutesLoading] = useState(true);
+  const [srMetal,     setSrMetal]     = useState('Cu');
+  const [srOreType,   setSrOreType]   = useState('');
   const [srGrade,     setSrGrade]     = useState('High (>1.5%)');
   const [srGrain,     setSrGrain]     = useState('Coarse (>150 µm)');
   const [srRegion,    setSrRegion]    = useState('Sub-Saharan Africa');
@@ -223,8 +127,10 @@ export function PlannerPage() {
   const [opxLabour,   setOpxLabour]   = useState(10);   // slider 3-25, /10 = multiplier
   const [opxXan,      setOpxXan]      = useState(1800);
   const [opxLime,     setOpxLime]     = useState(120);
-  const [opxAcid,     setOpxAcid]     = useState(110);
-  const [opxFreight,  setOpxFreight]  = useState(0);
+  const [opxAcid,      setOpxAcid]      = useState(110);
+  const [opxCyanide,   setOpxCyanide]   = useState(1800);
+  const [opxFlocculant,setOpxFlocculant]= useState(2200);
+  const [opxFreight,   setOpxFreight]   = useState(0);
   const [opxAsConc,   setOpxAsConc]   = useState(0.0);
   const [opxAsThresh, setOpxAsThresh] = useState(0.3);
   const [opxDone,     setOpxDone]     = useState(false);
@@ -252,6 +158,31 @@ export function PlannerPage() {
   const [nsrFreight,  setNsrFreight]  = useState(35);
   const [nsrDone,     setNsrDone]     = useState(false);
 
+  // Fetch process routes on mount
+  useEffect(() => {
+    fetchProcessRoutes()
+      .then(setAllRoutes)
+      .finally(() => setRoutesLoading(false));
+  }, []);
+
+  // Derived metal + ore-type options from live data
+  const availableMetals = useMemo(() => {
+    return [...new Set(allRoutes.map(r => r.metal).filter(Boolean))].sort();
+  }, [allRoutes]);
+
+  const availableOreTypes = useMemo(() => {
+    return [...new Set(
+      allRoutes.filter(r => r.metal === srMetal).map(r => r.oreType).filter(Boolean)
+    )].sort();
+  }, [allRoutes, srMetal]);
+
+  // Sync ore type when metal changes or data first loads
+  useEffect(() => {
+    if (availableOreTypes.length > 0 && !availableOreTypes.includes(srOreType)) {
+      setSrOreType(availableOreTypes[0]);
+    }
+  }, [availableOreTypes, srOreType]);
+
   // Sync smelter presets to form fields
   useEffect(() => {
     if (nsrSmelter !== 'custom') {
@@ -275,11 +206,11 @@ export function PlannerPage() {
     const waterCost  = (ROUTE_WATER[opxRoute] ?? 2) * waterRate;
     const rg = ROUTE_REAGENTS[opxRoute] ?? { xanthate:0, lime:0, acid:0, cyanide:0, flocculant:0 };
     const reagentCostPerT = (
-      rg.xanthate * opxXan +
-      rg.lime     * (opxLime  / 1000) * 1000 +
-      rg.acid     * (opxAcid  / 1000) * 1000 +
-      rg.cyanide  * 1800 +
-      rg.flocculant * 2200
+      rg.xanthate   * opxXan +
+      rg.lime       * opxLime +
+      rg.acid       * opxAcid +
+      rg.cyanide    * opxCyanide +
+      rg.flocculant * opxFlocculant
     ) / 1000;
     const labPerT   = (ROUTE_LABOUR[opxRoute] ?? 8) * labIdx * 80000 / (opxTpd * 365);
     const maintPerT = (ROUTE_MAINT[opxRoute]  ?? 2.5) * labIdx;
@@ -320,7 +251,7 @@ export function PlannerPage() {
     });
 
     return { totalPerT, totalPerKgCu, energyCost, totalKwh, breakdown, powerSteps, powerOPEX, asPenNote, tpd: opxTpd, route: opxRoute };
-  }, [opxRoute, opxTpd, opxGrade, opxRec, opxPower, opxWater, opxLabour, opxXan, opxLime, opxAcid, opxFreight, opxAsConc, opxAsThresh]);
+  }, [opxRoute, opxTpd, opxGrade, opxRec, opxPower, opxWater, opxLabour, opxXan, opxLime, opxAcid, opxCyanide, opxFlocculant, opxFreight, opxAsConc, opxAsThresh]);
 
   // ── NSR computation ───────────────────────────────────────────────────────
 
@@ -386,11 +317,13 @@ export function PlannerPage() {
   // ── Route screener handler ────────────────────────────────────────────────
 
   function handleRunScreener() {
-    const metalData = ALL_ROUTES[srMetal] ?? ALL_ROUTES.Copper;
-    let candidates: PlannerRoute[] = [];
-    Object.values(metalData).forEach(arr => arr.forEach(r => candidates.push(r)));
-    const scored: ScoredRoute[] = candidates
-      .map(r => ({ ...r, score: scoreRoute(r, srOreType, srGrain, srAs, srWater, srCo2) }))
+    const metalRoutes = allRoutes.filter(r => r.metal === srMetal);
+    const scored: ScoredRoute[] = metalRoutes
+      .map(r => ({
+        ...r,
+        score: scoreRoute(r, srOreType, srGrain, srAs, srWater, srCo2),
+        suitable: r.oreType === srOreType,
+      }))
       .sort((a, b) => b.score - a.score);
 
     const mods: string[] = [];
@@ -400,8 +333,9 @@ export function PlannerPage() {
     if (srWater) mods.push('Water scarcity — closed-circuit reclaim targeting >92%. Dry-stack tailings strongly recommended. Avoid water-intensive POX route.');
     if (srCo2)   mods.push('Low CO₂ priority — penalises high-CO₂ routes in scoring. Evaluate renewable energy for grinding circuits; H₂-fired smelting for Cu/Ni.');
 
-    const viable = scored.filter(r => r.suit[srOreType]);
-    setScreenLabel(`${srMetal} extraction — ${srOreType} ore · ${srGrade} · ${srGrain} · ${viable.length} viable routes evaluated`);
+    const metalLabel = METAL_LABELS[srMetal] ?? srMetal;
+    const directMatch = scored.filter(r => r.suitable).length;
+    setScreenLabel(`${metalLabel} extraction · ${srOreType} · ${srGrade} · ${srGrain} · ${directMatch} direct match · ${metalRoutes.length} total routes`);
     setScreenMods(mods);
     setScreenResults(scored);
   }
@@ -441,14 +375,16 @@ export function PlannerPage() {
               <div className="planner-page__grid">
                 <div className="planner-page__field">
                   <label>Primary metal</label>
-                  <select value={srMetal} onChange={e => setSrMetal(e.target.value)}>
-                    {['Copper','Lithium','Cobalt','Gold','Nickel'].map(o => <option key={o}>{o}</option>)}
+                  <select value={srMetal} onChange={e => setSrMetal(e.target.value)} disabled={routesLoading}>
+                    {availableMetals.map(m => (
+                      <option key={m} value={m}>{METAL_LABELS[m] ? `${METAL_LABELS[m]} (${m})` : m}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="planner-page__field">
                   <label>Ore type</label>
-                  <select value={srOreType} onChange={e => setSrOreType(e.target.value)}>
-                    {['Sulfide','Oxide','Mixed sulfide-oxide','Brine / evaporite'].map(o => <option key={o}>{o}</option>)}
+                  <select value={srOreType} onChange={e => setSrOreType(e.target.value)} disabled={routesLoading}>
+                    {availableOreTypes.map(o => <option key={o}>{o}</option>)}
                   </select>
                 </div>
                 <div className="planner-page__field">
@@ -518,27 +454,27 @@ export function PlannerPage() {
                     </div>
                   )}
                   {screenResults.map(r => {
-                    const suitable = r.suit[srOreType];
-                    const isRec    = screenResults.filter(x => x.suit[srOreType])[0]?.id === r.id;
-                    const catStyle = CAT_STYLES[r.cat] ?? CAT_STYLES.Hydrometallurgy;
+                    const isRec    = screenResults.filter(x => x.suitable)[0]?.id === r.id;
+                    const catStyle = CAT_STYLES[r.category] ?? CAT_STYLES.Hydrometallurgy;
                     const co2Style = getCo2Style(r.co2);
                     return (
                       <RouteCard
                         key={r.id}
                         name={r.name}
+                        subtitle={`${r.oreType} · ${r.category}`}
                         recommended={isRec}
                         badge={
                           <>
-                            <span className="planner-page__cat-badge" style={{ color: catStyle.color, background: catStyle.bg }}>{r.cat}</span>
+                            <span className="planner-page__cat-badge" style={{ color: catStyle.color, background: catStyle.bg }}>{r.category}</span>
                             {!isRec && (
-                              <span className={`planner-page__suit-badge planner-page__suit-badge--${suitable ? 'ok' : 'bad'}`}>
-                                {suitable ? 'Suitable' : 'Not recommended'}
+                              <span className={`planner-page__suit-badge planner-page__suit-badge--${r.suitable ? 'ok' : 'bad'}`}>
+                                {r.suitable ? 'Suitable' : 'Not recommended'}
                               </span>
                             )}
                           </>
                         }
                         metrics={[
-                          { label:'Recovery', value: r.recStr, highlight: isRec },
+                          { label:'Recovery', value: r.recovery, highlight: isRec },
                           { label:'OPEX',     value: r.opex },
                           { label:'Energy',   value: r.energy },
                           { label:'Water',    value: r.water },
@@ -632,6 +568,14 @@ export function PlannerPage() {
                   <div className="planner-page__field">
                     <label>H₂SO₄ price ($/t) <span className="planner-page__range-val">${opxAcid}</span></label>
                     <input type="range" min={40} max={250} step={5} value={opxAcid} onChange={e => setOpxAcid(parseInt(e.target.value))} />
+                  </div>
+                  <div className="planner-page__field">
+                    <label>NaCN price ($/t) <span className="planner-page__range-val">${opxCyanide.toLocaleString()}</span></label>
+                    <input type="range" min={1200} max={3000} step={50} value={opxCyanide} onChange={e => setOpxCyanide(parseInt(e.target.value))} />
+                  </div>
+                  <div className="planner-page__field">
+                    <label>Flocculant price ($/t) <span className="planner-page__range-val">${opxFlocculant.toLocaleString()}</span></label>
+                    <input type="range" min={1500} max={4000} step={50} value={opxFlocculant} onChange={e => setOpxFlocculant(parseInt(e.target.value))} />
                   </div>
                   <div className="planner-page__field">
                     <label>Freight premium (%)</label>

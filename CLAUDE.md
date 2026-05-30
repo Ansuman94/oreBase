@@ -36,10 +36,19 @@ src/
     _variables.scss     # All design tokens (colors, spacing, layout, metal colors)
   components/           # Reusable UI library (~40 components, each in its own folder)
     index.ts            # Barrel re-export for all components
+  data/
+    minerals.ts         # Mock mineral records
+    routes.ts           # Mock trade route records
+    suppliers.ts        # Mock supplier records
   layouts/
     AppLayout/          # NavBar + Sidebar shell wrapping page content
   pages/
-    SearchPage/         # /search route — hero, search bar, card grid
+    SearchPage/         # /search — hero, search bar, card grid
+    MineralsPage/       # /minerals — mineral catalogue
+    ProcessesPage/      # /processes — processing methods
+    SuppliersPage/      # /suppliers — supplier directory
+    PlannerPage/        # /planner — route/trade planner
+    PredictorPage/      # /predictor — AI price/demand predictor
   App.tsx               # BrowserRouter + Routes; / redirects to /search
   main.tsx              # React root mount
 ```

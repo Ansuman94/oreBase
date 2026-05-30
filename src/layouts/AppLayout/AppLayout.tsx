@@ -51,14 +51,19 @@ const NAV_SECTIONS = [
         badge: '312',
         icon: (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
+            <path d="M6 22V4a2 2 0 012-2h8a2 2 0 012 2v18Z" />
+            <path d="M6 12H4a2 2 0 00-2 2v6a2 2 0 002 2h2" />
+            <path d="M18 9h2a2 2 0 012 2v9a2 2 0 01-2 2h-2" />
+            <line x1="10" y1="6" x2="14" y2="6" />
+            <line x1="10" y1="10" x2="14" y2="10" />
+            <line x1="10" y1="14" x2="14" y2="14" />
           </svg>
         ),
       },
       {
         id: 'regions',
         label: 'Regions',
+        hidden: true,
         icon: (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
             <circle cx="12" cy="12" r="10" />
@@ -138,10 +143,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="app-layout">
-      <NavBar showSearch={!['/search', '/minerals', '/processes', '/suppliers', '/planner'].includes(location.pathname)} />
+      <NavBar showSearch={!['/search', '/minerals', '/processes', '/suppliers', '/planner', '/predictor'].includes(location.pathname)} />
       <div className="app-layout__body">
         <Sidebar
-          sections={NAV_SECTIONS}
+          sections={NAV_SECTIONS.map(s => ({ ...s, items: s.items.filter(i => !i.hidden) }))}
           activeId={activeId}
           onNav={handleNav}
           collapsed={sidebarCollapsed}

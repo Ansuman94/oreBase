@@ -6,7 +6,6 @@ dist/
 dist-ssr/
 
 # Environment
-.env
 .env.local
 .env.*.local
 

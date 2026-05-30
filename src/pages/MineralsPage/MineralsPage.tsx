@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
-import { MINERALS } from '../../data/minerals';
+import { useState, useMemo, useEffect } from 'react';
 import type { MineralData } from '../../data/minerals';
+import { fetchMinerals } from '../../api/minerals';
 import { Badge } from '../../components/Badge/Badge';
 import type { BadgeVariant } from '../../components/Badge/Badge';
 import { MetalButton } from '../../components/MetalButton/MetalButton';
@@ -14,13 +14,73 @@ import { MineralTable } from '../../components/MineralTable/MineralTable';
 import type { MineralRow } from '../../components/MineralTable/MineralTable';
 import { PropGrid } from '../../components/PropGrid/PropGrid';
 import { HorizontalBarChart } from '../../components/HorizontalBarChart/HorizontalBarChart';
+import { PageLoader } from '../../components/PageLoader/PageLoader';
 import './MineralsPage.scss';
 
 const METAL_COLORS: Record<string, string> = {
-  Cu: '#B8520A', Li: '#2E7D6B', Ni: '#2952A0', Co: '#7C3A8C',
-  Au: '#B07800', Ag: '#607090', Fe: '#8A4030', Mn: '#506020',
-  Zn: '#406870', Pb: '#5A5870', REE: '#7A4060', Pt: '#505A60',
-  PGM: '#505A60', Other: '#505050',
+  // Base & industrial — ore/mineral colour associations
+  Cu:  '#B8520A', // chalcopyrite — copper orange-brown
+  Fe:  '#8A4030', // hematite — rust red
+  Ni:  '#2D6048', // garnierite — green
+  Zn:  '#8A5220', // sphalerite — amber-brown
+  Pb:  '#4A5268', // galena — dark blue-grey
+  Sn:  '#5A3820', // cassiterite — dark brown
+  Al:  '#8A4A2A', // bauxite — earthy red
+  Cr:  '#2D5A3A', // chromite — chrome green
+  Mn:  '#506020', // pyrolusite — olive
+  Mo:  '#3A5068', // molybdenite — dark steel-blue
+  W:   '#3A3848', // wolframite — very dark grey
+  Ti:  '#7A4028', // rutile — reddish-brown
+  V:   '#9A3E18', // vanadinite — red-orange
+  // Precious metals
+  Au:  '#B07800', // native gold — golden
+  Ag:  '#505870', // argentite — dark grey
+  Pt:  '#485860', // sperrylite — dark steel
+  Pd:  '#4A5C70', // palladite — dark grey-blue
+  Rh:  '#3A5460', // rhodite — dark teal-grey
+  Ir:  '#485C78', // iridosmine — steel-blue
+  Ru:  '#3A4C5A', // laurite — dark blue-grey
+  Os:  '#3A4A5C', // osmiridium — darkest blue-grey
+  Re:  '#484858', // rhenium — dark grey
+  PGM: '#485860', // platinum group — dark steel
+  // Battery & energy metals
+  Li:  '#2E7D6B', // spodumene / brine — teal
+  Co:  '#1E52A0', // cobalt blue — the classic pigment
+  // Rare earth elements — mauve family
+  REE: '#7A4060', // rare earth elements (Rare Earth Elements)
+  La:  '#7A4060', // lanthanum
+  Ce:  '#784262', // cerium
+  Nd:  '#764464', // neodymium
+  Pr:  '#7C4058', // praseodymium
+  Sm:  '#724268', // samarium
+  Eu:  '#7A3E6A', // europium
+  Gd:  '#7C4265', // gadolinium
+  Dy:  '#763C60', // dysprosium
+  Tb:  '#784060', // terbium
+  Y:   '#6A4870', // yttrium
+  Sc:  '#685898', // scandium — lavender (REE-adjacent)
+  // Technology & specialty metals
+  Ta:  '#3A4858', // tantalite — dark navy
+  Nb:  '#3A5060', // columbite — dark steel
+  In:  '#405878', // indite — dark blue
+  Ga:  '#485888', // gallite — blue-grey
+  Ge:  '#486068', // argyrodite — grey-teal
+  Bi:  '#7A3858', // bismuthinite — dark mauve
+  Sb:  '#4A5040', // stibnite — dark grey-olive
+  Se:  '#7A3838', // selenium — dark red
+  Te:  '#486070', // tellurite — dark teal
+  As:  '#4A5840', // arsenopyrite — dark grey-olive
+  Hg:  '#9A3020', // cinnabar — vermilion red
+  Cd:  '#7A6820', // greenockite — dark yellow
+  Zr:  '#4A5C68', // zircon — steel teal
+  U:   '#5A6830', // uraninite / pitchblende — dark olive
+  // Mineral / non-metallic
+  Ba:  '#486068', // barite — grey
+  K:   '#8A7050', // sylvite / potash — earthy
+  P:   '#7A7038', // apatite — dark yellow-olive
+  F:   '#3A6878', // fluorite — deep teal
+  // Fallback
+  Other: '#505050',
 };
 
 function metalColor(metal: string): string {
@@ -55,7 +115,6 @@ const FLOAT_TIERS: { label: string; tier: FloatTier; key: string }[] = [
   { label: 'Good',      tier: 'g',  key: 'Good' },
   { label: 'Moderate',  tier: 'm',  key: 'Moderate' },
   { label: 'Poor',      tier: 'p',  key: 'Poor' },
-  { label: 'N/A',       tier: 'n',  key: 'N/A' },
 ];
 
 const SORT_OPTIONS = [
@@ -67,6 +126,15 @@ const SORT_OPTIONS = [
 ];
 
 const METAL_ORDER = ['Cu', 'Li', 'Ni', 'Co', 'Au', 'Ag', 'Fe', 'Mn', 'Zn', 'Pb', 'REE', 'Pt', 'PGM', 'Other'];
+
+const SG_REF_COLOR = '#B8B2AE'; // $color-faint — all reference bars share this
+const SG_REFERENCES = [
+  { label: 'Water',       value: 1.0  },
+  { label: 'Quartz',      value: 2.65 },
+  { label: 'Avg sulfide', value: 4.2  },
+  { label: 'Galena',      value: 7.6  },
+  { label: 'Gold',        value: 19.3 },
+];
 
 const TABLE_SORT_KEYS = new Set<string>(['name', 'formula', 'type', 'metal', 'grade', 'bwi', 'recovery', 'flotation']);
 
@@ -89,6 +157,9 @@ function getSortValue(m: MineralData, key: string): string | number {
 type DetailTab = 'props' | 'processing' | 'notes';
 
 export function MineralsPage() {
+  const [minerals, setMinerals] = useState<MineralData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedMetals, setSelectedMetals] = useState<Set<string>>(new Set());
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [selectedFloats, setSelectedFloats] = useState<Set<string>>(new Set());
@@ -100,25 +171,38 @@ export function MineralsPage() {
   const [view, setView] = useState<ViewMode>('table');
   const [selectedMineral, setSelectedMineral] = useState<MineralData | null>(null);
   const [detailTab, setDetailTab] = useState<DetailTab>('props');
+  const [showAllMetals, setShowAllMetals] = useState(false);
+
+  useEffect(() => {
+    fetchMinerals()
+      .then(setMinerals)
+      .catch(() => setError('Failed to load minerals from server.'))
+      .finally(() => setLoading(false));
+  }, []);
 
   const metalCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    MINERALS.forEach(m => { const g = m.metal_group || m.metal || 'Other'; map[g] = (map[g] || 0) + 1; });
+    minerals.forEach(m => { const g = m.metal_group || m.metal || 'Other'; map[g] = (map[g] || 0) + 1; });
     return map;
-  }, []);
+  }, [minerals]);
 
-  const availableMetals = METAL_ORDER.filter(m => metalCounts[m]);
+  const availableMetals = useMemo(() => {
+    const known = METAL_ORDER.filter(m => metalCounts[m]);
+    const extra = Object.keys(metalCounts).filter(m => !METAL_ORDER.includes(m)).sort();
+    return [...known, ...extra];
+  }, [metalCounts]);
 
   const typeCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    MINERALS.forEach(m => { if (m.type) map[m.type] = (map[m.type] || 0) + 1; });
+    minerals.forEach(m => { if (m.type) map[m.type] = (map[m.type] || 0) + 1; });
     return map;
-  }, []);
+  }, [minerals]);
 
   const availableTypes = useMemo(() => Object.keys(typeCounts).sort(), [typeCounts]);
 
+
   const filtered = useMemo(() => {
-    let list = MINERALS;
+    let list = minerals;
     if (selectedMetals.size > 0) list = list.filter(m => selectedMetals.has(m.metal_group || m.metal));
     if (selectedTypes.size > 0)  list = list.filter(m => selectedTypes.has(m.type));
     if (selectedFloats.size > 0) list = list.filter(m => selectedFloats.has(m.float_cat));
@@ -139,7 +223,7 @@ export function MineralsPage() {
       if (av > bv) return sortDir === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [selectedMetals, selectedTypes, selectedFloats, sgMin, sgMax, searchText, sortKey, sortDir]);
+  }, [minerals, selectedMetals, selectedTypes, selectedFloats, sgMin, sgMax, searchText, sortKey, sortDir]);
 
   const tableRows: MineralRow[] = useMemo(() =>
     filtered.map((m, i) => ({
@@ -199,93 +283,108 @@ export function MineralsPage() {
 
   const sgComparisons = useMemo(() => {
     if (!selectedMineral) return [];
-    return MINERALS
-      .filter(m => (m.metal_group || m.metal) === (selectedMineral.metal_group || selectedMineral.metal) && m.name !== selectedMineral.name)
-      .slice(0, 5)
-      .map(m => ({ label: m.name, value: parseFloat(m.sg_min) || 0, max: 10, color: '#C8BEB8' }));
+    const mineralSg = parseFloat(selectedMineral.sg_min) || 0;
+    const rows = [
+      ...SG_REFERENCES.map(r => ({ label: r.label, value: r.value, max: 20, color: SG_REF_COLOR })),
+      { label: 'This mineral', value: mineralSg, max: 20, color: '#C85A0A', highlight: true },
+    ];
+    return rows.sort((a, b) => a.value - b.value);
   }, [selectedMineral]);
 
   return (
     <div className="minerals-page">
       <aside className="minerals-page__filters">
-        <div className="minerals-page__filter-head">
-          <span className="minerals-page__filter-title">Filters</span>
-          {hasFilters && (
-            <button className="minerals-page__filter-clear" onClick={clearFilters}>Clear all</button>
-          )}
-        </div>
+        {loading ? <PageLoader variant="filter" /> : (
+          <>
+            <div className="minerals-page__filter-head">
+              <span className="minerals-page__filter-title">Filters</span>
+              {hasFilters && (
+                <button className="minerals-page__filter-clear" onClick={clearFilters}>Clear all</button>
+              )}
+            </div>
 
-        <div className="minerals-page__filter-section">
-          <div className="minerals-page__filter-label">Metal</div>
-          <div className="minerals-page__metal-grid">
-            {availableMetals.map(m => (
-              <MetalButton
-                key={m}
-                metal={m}
-                color={metalColor(m)}
-                count={metalCounts[m]}
-                active={selectedMetals.has(m)}
-                onClick={() => toggleMetal(m)}
-              />
-            ))}
-          </div>
-        </div>
+            <div className="minerals-page__filter-section">
+              <div className="minerals-page__filter-label">Metal</div>
+              <div className="minerals-page__metal-grid">
+                {(showAllMetals ? availableMetals : availableMetals.slice(0, 8)).map(m => (
+                  <MetalButton
+                    key={m}
+                    metal={m}
+                    color={metalColor(m)}
+                    count={metalCounts[m]}
+                    active={selectedMetals.has(m)}
+                    onClick={() => toggleMetal(m)}
+                  />
+                ))}
+              </div>
+              {availableMetals.length > 8 && (
+                <button
+                  className="minerals-page__metal-more"
+                  onClick={() => setShowAllMetals(v => !v)}
+                >
+                  {showAllMetals ? 'Show less' : `+${availableMetals.length - 8} more`}
+                </button>
+              )}
+            </div>
 
-        <div className="minerals-page__filter-section">
-          <div className="minerals-page__filter-label">Ore Type</div>
-          <div className="minerals-page__type-list">
-            {availableTypes.map(t => (
-              <Checkbox
-                key={t}
-                label={t}
-                count={typeCounts[t]}
-                checked={selectedTypes.has(t)}
-                onChange={() => toggleType(t)}
-              />
-            ))}
-          </div>
-        </div>
+            <div className="minerals-page__filter-section">
+              <div className="minerals-page__filter-label">Ore Type</div>
+              <div className="minerals-page__type-list">
+                {availableTypes.map(t => (
+                  <Checkbox
+                    key={t}
+                    label={t}
+                    count={typeCounts[t]}
+                    checked={selectedTypes.has(t)}
+                    onChange={() => toggleType(t)}
+                  />
+                ))}
+              </div>
+            </div>
 
-        <div className="minerals-page__filter-section">
-          <div className="minerals-page__filter-label">Flotation Response</div>
-          <div className="minerals-page__float-tags">
-            {FLOAT_TIERS.map(f => (
-              <FloatTag
-                key={f.key}
-                label={f.label}
-                tier={f.tier}
-                active={selectedFloats.has(f.key)}
-                onClick={() => toggleFloat(f.key)}
-              />
-            ))}
-          </div>
-        </div>
+            <div className="minerals-page__filter-section">
+              <div className="minerals-page__filter-label">Flotation Response</div>
+              <div className="minerals-page__float-tags">
+                {FLOAT_TIERS.map(f => (
+                  <FloatTag
+                    key={f.key}
+                    label={f.label}
+                    tier={f.tier}
+                    active={selectedFloats.has(f.key)}
+                    onClick={() => toggleFloat(f.key)}
+                  />
+                ))}
+              </div>
+            </div>
 
-        <div className="minerals-page__filter-section">
-          <div className="minerals-page__filter-label">SG Range</div>
-          <div className="minerals-page__sg-row">
-            <input
-              className="minerals-page__sg-input"
-              type="number"
-              placeholder="Min"
-              step="0.1"
-              value={sgMin}
-              onChange={e => setSgMin(e.target.value)}
-            />
-            <span className="minerals-page__sg-sep">–</span>
-            <input
-              className="minerals-page__sg-input"
-              type="number"
-              placeholder="Max"
-              step="0.1"
-              value={sgMax}
-              onChange={e => setSgMax(e.target.value)}
-            />
-          </div>
-        </div>
+            <div className="minerals-page__filter-section">
+              <div className="minerals-page__filter-label">SG Range</div>
+              <div className="minerals-page__sg-row">
+                <input
+                  className="minerals-page__sg-input"
+                  type="number"
+                  placeholder="Min"
+                  step="0.1"
+                  value={sgMin}
+                  onChange={e => setSgMin(e.target.value)}
+                />
+                <span className="minerals-page__sg-sep">–</span>
+                <input
+                  className="minerals-page__sg-input"
+                  type="number"
+                  placeholder="Max"
+                  step="0.1"
+                  value={sgMax}
+                  onChange={e => setSgMax(e.target.value)}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </aside>
 
       <div className="minerals-page__main">
+        {(loading || error) ? <PageLoader variant="table" rows={8} error={error} /> : <>
         <div className="minerals-page__toolbar">
           <span className="minerals-page__count">
             {filtered.length.toLocaleString()} mineral{filtered.length !== 1 ? 's' : ''}
@@ -344,6 +443,7 @@ export function MineralsPage() {
             </div>
           )}
         </div>
+        </>}
       </div>
 
       <aside className="minerals-page__detail">
@@ -394,12 +494,20 @@ export function MineralsPage() {
 
             <div className="minerals-page__detail-body">
               {detailTab === 'props' && (
-                <PropGrid properties={[
-                  { label: 'Specific Gravity', value: `${selectedMineral.sg_min}–${selectedMineral.sg_max} g/cm³` },
-                  { label: 'Hardness (Mohs)',  value: selectedMineral.hardness || '—' },
-                  { label: 'Bond Work Index',  value: selectedMineral.bwi ? `${selectedMineral.bwi} kWh/t` : '—' },
-                  { label: 'Liberation Size',  value: selectedMineral.lib ? `${selectedMineral.lib} µm` : '—' },
-                ]} />
+                <>
+                  <PropGrid properties={[
+                    { label: 'Specific Gravity', value: `${selectedMineral.sg_min}–${selectedMineral.sg_max} g/cm³` },
+                    { label: 'Hardness (Mohs)',  value: selectedMineral.hardness || '—' },
+                    { label: 'Bond Work Index',  value: selectedMineral.bwi ? `${selectedMineral.bwi} kWh/t` : '—' },
+                    { label: 'Liberation Size',  value: selectedMineral.lib ? `${selectedMineral.lib} µm` : '—' },
+                  ]} />
+                  {sgComparisons.length > 0 && (
+                    <>
+                      <div className="minerals-page__chart-title">Density (SG) in Context</div>
+                      <HorizontalBarChart rows={sgComparisons} />
+                    </>
+                  )}
+                </>
               )}
 
               {detailTab === 'processing' && (
@@ -432,23 +540,6 @@ export function MineralsPage() {
                     { label: 'Grade',     value: selectedMineral.grade ? `${selectedMineral.grade}%` : '—' },
                     { label: 'Leaching',  value: selectedMineral.leach || '—' },
                   ]} />
-                  {sgComparisons.length > 0 && (
-                    <>
-                      <div className="minerals-page__chart-title">Density vs. Similar Minerals</div>
-                      <HorizontalBarChart
-                        rows={[
-                          {
-                            label: selectedMineral.name,
-                            value: parseFloat(selectedMineral.sg_min) || 0,
-                            max: 10,
-                            color: metalColor(selectedMineral.metal_group || selectedMineral.metal),
-                            highlight: true,
-                          },
-                          ...sgComparisons,
-                        ]}
-                      />
-                    </>
-                  )}
                 </>
               )}
 

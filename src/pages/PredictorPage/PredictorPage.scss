@@ -1,0 +1,352 @@
+@use '../../styles/variables' as v;
+
+.predictor-page {
+  height: 100%;
+  overflow-y: auto;
+  padding: v.$space-20 v.$space-24;
+  background: v.$color-bg;
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-14;
+
+  // ── Two-column input layout ───────────────────────────────────────────────
+
+  &__inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: v.$space-14;
+  }
+
+  // ── Card ─────────────────────────────────────────────────────────────────
+
+  &__card {
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 6px;
+    padding: v.$space-18 v.$space-20;
+
+    &--no-gap { padding-bottom: v.$space-12; }
+    &--insight { padding: 0; background: transparent; border: none; }
+  }
+
+  &__card-header {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    margin-bottom: v.$space-3;
+  }
+
+  &__card-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    &--brand { background: v.$color-brand; }
+    &--blue  { background: #1A4F8A; }
+  }
+
+  &__card-title {
+    font-size: v.$font-size-base;
+    font-weight: 600;
+    color: v.$color-text;
+  }
+
+  &__card-desc {
+    font-size: v.$font-size-xs;
+    color: v.$color-muted;
+    margin-bottom: v.$space-14;
+  }
+
+  // ── Sub-header ────────────────────────────────────────────────────────────
+
+  &__sub-header {
+    font-size: v.$font-size-xs;
+    font-weight: 600;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: v.$space-10 0 7px;
+  }
+
+  // ── Field ─────────────────────────────────────────────────────────────────
+
+  &__field {
+    margin-bottom: v.$space-10;
+    &--flush { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: v.$font-size-xxs;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: v.$color-muted;
+      margin-bottom: v.$space-3;
+    }
+
+    select,
+    input[type='number'] {
+      width: 100%;
+      border: 1px solid v.$color-border;
+      border-radius: 4px;
+      padding: 7px v.$space-10;
+      font-size: v.$font-size-base;
+      font-family: v.$font-sans;
+      color: v.$color-text;
+      background: v.$color-surface;
+      outline: none;
+      appearance: none;
+      transition: border-color 0.12s, background 0.12s;
+      &:focus { border-color: v.$color-brand; background: v.$color-white; }
+    }
+  }
+
+  &__field-hint {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: 2px;
+  }
+
+  // ── 2-column input grid ───────────────────────────────────────────────────
+
+  &__grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: v.$space-10;
+    margin-bottom: v.$space-10;
+  }
+
+  // ── Slider field ──────────────────────────────────────────────────────────
+
+  &__slider-field {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-4;
+    margin-bottom: v.$space-12;
+
+    label {
+      font-size: v.$font-size-xs;
+      font-weight: 500;
+      color: v.$color-sub;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input[type='range'] {
+      width: 100%;
+      accent-color: v.$color-brand;
+      cursor: pointer;
+    }
+  }
+
+  &__slider-val {
+    font-family: v.$font-mono;
+    color: v.$color-brand;
+    font-weight: 600;
+  }
+
+  &__slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+  }
+
+  &__slider-marker  { color: v.$color-brand; }
+  &__slider-optimal { color: v.$color-green; }
+
+  // ── Recovery ceiling box ──────────────────────────────────────────────────
+
+  &__ceiling {
+    margin-top: v.$space-12;
+    border-radius: 5px;
+    padding: v.$space-10 v.$space-12;
+    border: 1px solid;
+
+    &--ok   { background: v.$color-green-light;  border-color: v.$color-green-border; }
+    &--warn { background: v.$color-amber-light;  border-color: v.$color-amber-border; }
+    &--bad  { background: v.$color-red-light;    border-color: v.$color-red-border;   }
+  }
+
+  &__ceiling-label {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: v.$color-muted;
+    margin-bottom: v.$space-4;
+  }
+
+  &__ceiling-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-10;
+  }
+
+  &__ceiling-val {
+    font-size: v.$font-size-xl;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+  }
+
+  &__ceiling-note {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+  }
+
+  // ── KPIs ──────────────────────────────────────────────────────────────────
+
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: v.$space-10;
+  }
+
+  &__kpi-box {
+    background: v.$color-surface;
+    border: 1px solid v.$color-border-light;
+    border-radius: 5px;
+    padding: v.$space-12 v.$space-14;
+  }
+
+  &__kpi-label {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: v.$space-3;
+  }
+
+  &__kpi-val {
+    font-size: v.$font-size-xl;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+  }
+
+  &__kpi-sub {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: 2px;
+  }
+
+  // ── Analysis section (constraints + sensitivity side by side) ─────────────
+
+  &__analysis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: v.$space-14;
+  }
+
+  &__analysis-title {
+    font-size: v.$font-size-base;
+    font-weight: 600;
+    color: v.$color-text;
+    margin-bottom: v.$space-12;
+  }
+
+  // ── Constraints list ──────────────────────────────────────────────────────
+
+  &__constraints {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__constraint-row {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-8;
+    padding: 7px 0;
+    border-bottom: 1px solid v.$color-border-light;
+    &:last-child { border-bottom: none; }
+  }
+
+  &__constraint-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+    &--ok   { background: v.$color-green-light;  border: 1px solid v.$color-green-border;  color: v.$color-green; }
+    &--warn { background: v.$color-amber-light;  border: 1px solid v.$color-amber-border;  color: v.$color-amber; }
+    &--bad  { background: v.$color-red-light;    border: 1px solid v.$color-red-border;    color: v.$color-red; }
+  }
+
+  &__constraint-body { flex: 1; }
+
+  &__constraint-label {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: v.$color-text;
+    display: flex;
+    align-items: center;
+    gap: v.$space-5;
+  }
+
+  &__constraint-impact {
+    font-family: v.$font-mono;
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+  }
+
+  &__constraint-detail {
+    font-size: v.$font-size-xs;
+    color: v.$color-muted;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  &__pyrite-note {
+    padding: v.$space-8 v.$space-10;
+    background: v.$color-amber-light;
+    border: 1px solid v.$color-amber-border;
+    border-radius: 4px;
+    font-size: v.$font-size-xs;
+    color: v.$color-amber;
+    margin-top: v.$space-8;
+  }
+
+  // ── Sensitivity list ──────────────────────────────────────────────────────
+
+  &__sensitivity { display: flex; flex-direction: column; }
+
+  &__sens-row {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-8;
+    padding: 7px 0;
+    border-bottom: 1px solid v.$color-border-light;
+    &:last-child { border-bottom: none; }
+  }
+
+  &__sens-left { flex: 1; }
+
+  &__sens-label {
+    font-size: v.$font-size-xs;
+    font-weight: 500;
+    color: v.$color-sub;
+  }
+
+  &__sens-current {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+  }
+
+  &__sens-rec {
+    font-size: v.$font-size-xs;
+    flex: 1;
+    text-align: right;
+    line-height: 1.4;
+  }
+}

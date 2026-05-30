@@ -29,7 +29,7 @@
   &__track {
     flex: 1;
     height: 8px;
-    background: v.$color-surface;
+    background: v.$color-border;
     border-radius: 4px;
     overflow: hidden;
   }
@@ -49,5 +49,9 @@
     width: 40px;
     text-align: right;
     flex-shrink: 0;
+
+    .hbar-chart__row--highlight & {
+      color: v.$color-brand;
+    }
   }
 }

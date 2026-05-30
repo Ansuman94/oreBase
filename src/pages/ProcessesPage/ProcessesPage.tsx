@@ -1,8 +1,10 @@
-import { useState, useMemo } from 'react';
-import { PROCESS_ROUTES } from '../../data/routes';
+import { useState, useMemo, useEffect } from 'react';
+import type { ProcessRoute } from '../../data/routes';
+import { fetchProcessRoutes } from '../../api/processes';
 import { Checkbox } from '../../components/Checkbox/Checkbox';
 import { MetalButton } from '../../components/MetalButton/MetalButton';
 import { RouteCard } from '../../components/RouteCard/RouteCard';
+import { PageLoader } from '../../components/PageLoader/PageLoader';
 import './ProcessesPage.scss';
 
 const CAT_STYLES: Record<string, { color: string; bg: string }> = {
@@ -21,18 +23,31 @@ const CO2_STYLES: Record<string, { color: string; bg: string }> = {
 
 const PROCESS_METHODS = [
   'Froth flotation',
+  'Smelting',
+  'Gravity separation',
+  'Roasting',
+  'CIL / CIP',
+  'Electrowinning',
+  'Ion exchange',
   'Heap leaching',
   'SX-EW',
   'Pressure oxidation',
-  'DLE',
+  'DMS',
+  'Magnetic separation',
   'Bioleaching',
+  'DLE',
+  'HPAL',
+  'In-situ leach',
 ];
 
 const METAL_COLORS: Record<string, string> = {
-  Cu: '#B8520A', Li: '#2E7D6B', Au: '#B07800', Co: '#7C3A8C', Ni: '#2952A0',
+  Cu: '#B8520A', Li: '#2E7D6B', Au: '#B07800', Co: '#1E52A0', Ni: '#2D6048',
+  Ag: '#505870', Fe: '#8A4030', Mn: '#506020', Zn: '#8A5220', Pb: '#4A5268',
+  Mo: '#3A5068', W: '#3A3848', Sn: '#5A3820', Al: '#8A4A2A', Cr: '#2D5A3A',
+  V: '#9A3E18', Ti: '#7A4028', REE: '#7A4060', Pt: '#485860', PGM: '#485860',
 };
 
-const METALS = ['Cu', 'Li', 'Au', 'Co', 'Ni'];
+const METAL_ORDER = ['Cu', 'Li', 'Au', 'Co', 'Ni', 'Ag', 'Fe', 'Mn', 'Zn', 'Pb', 'Mo', 'W', 'REE', 'Pt', 'PGM'];
 
 const SORT_OPTIONS = [
   { value: 'relevance', label: 'Relevance' },
@@ -42,6 +57,9 @@ const SORT_OPTIONS = [
 ];
 
 export function ProcessesPage() {
+  const [routes, setRoutes] = useState<ProcessRoute[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedMethods, setSelectedMethods] = useState<Set<string>>(new Set());
   const [recovMin, setRecovMin] = useState('');
   const [recovMax, setRecovMax] = useState('');
@@ -50,21 +68,35 @@ export function ProcessesPage() {
   const [opexMax, setOpexMax] = useState('');
   const [searchText, setSearchText] = useState('');
   const [sortKey, setSortKey] = useState('relevance');
+  const [showAllMetals, setShowAllMetals] = useState(false);
+
+  useEffect(() => {
+    fetchProcessRoutes()
+      .then(setRoutes)
+      .catch(() => setError('Failed to load process routes from server.'))
+      .finally(() => setLoading(false));
+  }, []);
 
   const methodCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    PROCESS_ROUTES.forEach(r => r.methods.forEach(m => { map[m] = (map[m] || 0) + 1; }));
+    routes.forEach(r => r.methods.forEach(m => { map[m] = (map[m] || 0) + 1; }));
     return map;
-  }, []);
+  }, [routes]);
 
   const metalCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    PROCESS_ROUTES.forEach(r => { map[r.metal] = (map[r.metal] || 0) + 1; });
+    routes.forEach(r => { map[r.metal] = (map[r.metal] || 0) + 1; });
     return map;
-  }, []);
+  }, [routes]);
+
+  const availableMetals = useMemo(() => {
+    const known = METAL_ORDER.filter(m => metalCounts[m]);
+    const extra = Object.keys(metalCounts).filter(m => !METAL_ORDER.includes(m)).sort();
+    return [...known, ...extra];
+  }, [metalCounts]);
 
   const filtered = useMemo(() => {
-    let list = PROCESS_ROUTES;
+    let list = routes;
 
     if (selectedMethods.size > 0) {
       list = list.filter(r => r.methods.some(m => selectedMethods.has(m)));
@@ -95,7 +127,7 @@ export function ProcessesPage() {
       if (!a.recommended && b.recommended) return 1;
       return b.recoveryNum - a.recoveryNum;
     });
-  }, [selectedMethods, selectedMetals, recovMin, recovMax, opexMin, opexMax, searchText, sortKey]);
+  }, [routes, selectedMethods, selectedMetals, recovMin, recovMax, opexMin, opexMax, searchText, sortKey]);
 
   function toggleMethod(m: string) {
     setSelectedMethods(prev => { const n = new Set(prev); n.has(m) ? n.delete(m) : n.add(m); return n; });
@@ -118,86 +150,101 @@ export function ProcessesPage() {
   return (
     <div className="processes-page">
       <aside className="processes-page__filters">
-        <div className="processes-page__filter-head">
-          <span className="processes-page__filter-title">Refine</span>
-          {hasFilters && (
-            <button className="processes-page__filter-clear" onClick={clearFilters}>Clear all</button>
-          )}
-        </div>
+        {loading ? <PageLoader variant="filter" /> : (
+          <>
+            <div className="processes-page__filter-head">
+              <span className="processes-page__filter-title">Refine</span>
+              {hasFilters && (
+                <button className="processes-page__filter-clear" onClick={clearFilters}>Clear all</button>
+              )}
+            </div>
 
-        <div className="processes-page__filter-section">
-          <div className="processes-page__filter-label">Process method</div>
-          {PROCESS_METHODS.map(m => (
-            <Checkbox
-              key={m}
-              label={m}
-              count={methodCounts[m] ?? 0}
-              checked={selectedMethods.has(m)}
-              onChange={() => toggleMethod(m)}
-            />
-          ))}
-        </div>
+            <div className="processes-page__filter-section">
+              <div className="processes-page__filter-label">Process method</div>
+              <div className="processes-page__method-list">
+                {PROCESS_METHODS.map(m => (
+                  <Checkbox
+                    key={m}
+                    label={m}
+                    count={methodCounts[m] ?? 0}
+                    checked={selectedMethods.has(m)}
+                    onChange={() => toggleMethod(m)}
+                  />
+                ))}
+              </div>
+            </div>
 
-        <div className="processes-page__filter-section">
-          <div className="processes-page__filter-label">Recovery range (%)</div>
-          <div className="processes-page__range-row">
-            <input
-              className="processes-page__range-input"
-              type="number"
-              placeholder="Min"
-              value={recovMin}
-              onChange={e => setRecovMin(e.target.value)}
-            />
-            <span className="processes-page__range-sep">—</span>
-            <input
-              className="processes-page__range-input"
-              type="number"
-              placeholder="Max"
-              value={recovMax}
-              onChange={e => setRecovMax(e.target.value)}
-            />
-          </div>
-        </div>
+            <div className="processes-page__filter-section">
+              <div className="processes-page__filter-label">Recovery range (%)</div>
+              <div className="processes-page__range-row">
+                <input
+                  className="processes-page__range-input"
+                  type="number"
+                  placeholder="Min"
+                  value={recovMin}
+                  onChange={e => setRecovMin(e.target.value)}
+                />
+                <span className="processes-page__range-sep">—</span>
+                <input
+                  className="processes-page__range-input"
+                  type="number"
+                  placeholder="Max"
+                  value={recovMax}
+                  onChange={e => setRecovMax(e.target.value)}
+                />
+              </div>
+            </div>
 
-        <div className="processes-page__filter-section">
-          <div className="processes-page__filter-label">Primary metal</div>
-          <div className="processes-page__metal-grid">
-            {METALS.map(m => (
-              <MetalButton
-                key={m}
-                metal={m}
-                color={METAL_COLORS[m] ?? '#505050'}
-                count={metalCounts[m] ?? 0}
-                active={selectedMetals.has(m)}
-                onClick={() => toggleMetal(m)}
-              />
-            ))}
-          </div>
-        </div>
+            <div className="processes-page__filter-section">
+              <div className="processes-page__filter-label">Primary metal</div>
+              <div className="processes-page__metal-grid">
+                {(showAllMetals ? availableMetals : availableMetals.slice(0, 8)).map(m => (
+                  <MetalButton
+                    key={m}
+                    metal={m}
+                    color={METAL_COLORS[m] ?? '#505050'}
+                    count={metalCounts[m] ?? 0}
+                    active={selectedMetals.has(m)}
+                    onClick={() => toggleMetal(m)}
+                  />
+                ))}
+              </div>
+              {availableMetals.length > 8 && (
+                <button
+                  className="processes-page__metal-more"
+                  onClick={() => setShowAllMetals(v => !v)}
+                >
+                  {showAllMetals ? 'Show less' : `+${availableMetals.length - 8} more`}
+                </button>
+              )}
+            </div>
 
-        <div className="processes-page__filter-section">
-          <div className="processes-page__filter-label">OPEX ($/t ore)</div>
-          <div className="processes-page__range-row">
-            <input
-              className="processes-page__range-input"
-              type="number"
-              placeholder="Min"
-              value={opexMin}
-              onChange={e => setOpexMin(e.target.value)}
-            />
-            <span className="processes-page__range-sep">—</span>
-            <input
-              className="processes-page__range-input"
-              type="number"
-              placeholder="Max"
-              value={opexMax}
-              onChange={e => setOpexMax(e.target.value)}
-            />
-          </div>
-        </div>
+            <div className="processes-page__filter-section">
+              <div className="processes-page__filter-label">OPEX ($/t ore)</div>
+              <div className="processes-page__range-row">
+                <input
+                  className="processes-page__range-input"
+                  type="number"
+                  placeholder="Min"
+                  value={opexMin}
+                  onChange={e => setOpexMin(e.target.value)}
+                />
+                <span className="processes-page__range-sep">—</span>
+                <input
+                  className="processes-page__range-input"
+                  type="number"
+                  placeholder="Max"
+                  value={opexMax}
+                  onChange={e => setOpexMax(e.target.value)}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </aside>
 
       <div className="processes-page__main">
+        {(loading || error) ? <PageLoader variant="list" rows={5} error={error} /> : <>
         <div className="processes-page__toolbar">
           <span className="processes-page__count">
             <strong>{filtered.length.toLocaleString()}</strong> process routes
@@ -271,6 +318,7 @@ export function ProcessesPage() {
             })
           )}
         </div>
+        </>}
       </div>
     </div>
   );

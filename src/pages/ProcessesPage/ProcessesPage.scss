@@ -62,11 +62,38 @@
     margin-bottom: v.$space-5;
   }
 
+  &__method-list {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-3;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: v.$space-3;
+
+    scrollbar-width: thin;
+    scrollbar-color: v.$color-border transparent;
+    &::-webkit-scrollbar       { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: v.$color-border; border-radius: 2px; }
+  }
+
   &__metal-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: v.$space-5;
     margin-top: v.$space-3;
+  }
+
+  &__metal-more {
+    margin-top: v.$space-6;
+    font-size: v.$font-size-xs;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: v.$font-sans;
+    &:hover { text-decoration: underline; }
   }
 
   &__range-row {

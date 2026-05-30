@@ -1,21 +1,12 @@
-import { useState, useMemo } from 'react';
-import { SUPPLIERS } from '../../data/suppliers';
+import { useState, useMemo, useEffect } from 'react';
 import type { Supplier } from '../../data/suppliers';
+import { fetchSuppliers } from '../../api/suppliers';
 import { Checkbox } from '../../components/Checkbox/Checkbox';
 import { SupplierCard } from '../../components/SupplierCard/SupplierCard';
 import { PropertyTable } from '../../components/PropertyTable/PropertyTable';
 import { Tag } from '../../components/Tag/Tag';
+import { PageLoader } from '../../components/PageLoader/PageLoader';
 import './SuppliersPage.scss';
-
-const CATEGORIES = [
-  'Flotation reagents',
-  'Grinding media',
-  'Processing equipment',
-  'Leaching chemicals',
-  'Engineering contractors',
-];
-
-const CERTIFICATIONS = ['ISO 9001', 'ISO 14001'];
 
 const SORT_OPTIONS = [
   { value: 'relevance', label: 'Relevance' },
@@ -26,31 +17,47 @@ const SORT_OPTIONS = [
 type DetailTab = 'details' | 'products' | 'contact';
 
 export function SuppliersPage() {
-  const [selectedCats, setSelectedCats]   = useState<Set<string>>(new Set());
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCats, setSelectedCats]       = useState<Set<string>>(new Set());
   const [selectedRegions, setSelectedRegions] = useState<Set<string>>(new Set());
-  const [selectedCerts, setSelectedCerts] = useState<Set<string>>(new Set());
   const [searchText, setSearchText]       = useState('');
   const [sortKey, setSortKey]             = useState('relevance');
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   const [detailTab, setDetailTab]         = useState<DetailTab>('details');
 
+  useEffect(() => {
+    fetchSuppliers()
+      .then(setSuppliers)
+      .catch(() => setError('Failed to load suppliers from server.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const availableCategories = useMemo(() => {
+    return [...new Set(suppliers.map(s => s.cat))].sort();
+  }, [suppliers]);
+
+  const availableRegions = useMemo(() => {
+    return [...new Set(suppliers.map(s => s.region))].sort();
+  }, [suppliers]);
+
   const catCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    SUPPLIERS.forEach(s => { map[s.cat] = (map[s.cat] || 0) + 1; });
+    suppliers.forEach(s => { map[s.cat] = (map[s.cat] || 0) + 1; });
     return map;
-  }, []);
+  }, [suppliers]);
 
-  const certCounts = useMemo(() => {
+  const regionCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    SUPPLIERS.forEach(s => { map[s.cert] = (map[s.cert] || 0) + 1; });
+    suppliers.forEach(s => { map[s.region] = (map[s.region] || 0) + 1; });
     return map;
-  }, []);
+  }, [suppliers]);
 
   const filtered = useMemo(() => {
-    let list = SUPPLIERS;
+    let list = suppliers;
     if (selectedCats.size > 0)    list = list.filter(s => selectedCats.has(s.cat));
-    if (selectedRegions.size > 0) list = list.filter(s => [...selectedRegions].some(r => s.region.includes(r)));
-    if (selectedCerts.size > 0)   list = list.filter(s => selectedCerts.has(s.cert));
+    if (selectedRegions.size > 0) list = list.filter(s => selectedRegions.has(s.region));
     if (searchText) {
       const q = searchText.toLowerCase();
       list = list.filter(s =>
@@ -65,10 +72,10 @@ export function SuppliersPage() {
       if (sortKey === 'category') return a.cat.localeCompare(b.cat);
       return 0;
     });
-  }, [selectedCats, selectedRegions, selectedCerts, searchText, sortKey]);
+  }, [suppliers, selectedCats, selectedRegions, searchText, sortKey]);
 
-  function toggleCat(c: string)  { setSelectedCats(p  => toggle(p, c)); }
-  function toggleCert(c: string) { setSelectedCerts(p => toggle(p, c)); }
+  function toggleCat(c: string)    { setSelectedCats(p    => toggle(p, c)); }
+  function toggleRegion(r: string) { setSelectedRegions(p => toggle(p, r)); }
 
   function toggle(prev: Set<string>, key: string): Set<string> {
     const n = new Set(prev);
@@ -79,7 +86,6 @@ export function SuppliersPage() {
   function clearFilters() {
     setSelectedCats(new Set());
     setSelectedRegions(new Set());
-    setSelectedCerts(new Set());
   }
 
   function handleCardClick(s: Supplier) {
@@ -87,48 +93,53 @@ export function SuppliersPage() {
     setDetailTab('details');
   }
 
-  const hasFilters = selectedCats.size > 0 || selectedRegions.size > 0 || selectedCerts.size > 0;
+  const hasFilters = selectedCats.size > 0 || selectedRegions.size > 0;
 
   return (
     <div className="suppliers-page">
       {/* Filter sidebar */}
       <aside className="suppliers-page__filters">
-        <div className="suppliers-page__filter-head">
-          <span className="suppliers-page__filter-title">Refine</span>
-          {hasFilters && (
-            <button className="suppliers-page__filter-clear" onClick={clearFilters}>Clear all</button>
-          )}
-        </div>
+        {loading ? <PageLoader variant="filter" /> : (
+          <>
+            <div className="suppliers-page__filter-head">
+              <span className="suppliers-page__filter-title">Refine</span>
+              {hasFilters && (
+                <button className="suppliers-page__filter-clear" onClick={clearFilters}>Clear all</button>
+              )}
+            </div>
 
-        <div className="suppliers-page__filter-section">
-          <div className="suppliers-page__filter-label">Category</div>
-          {CATEGORIES.map(c => (
-            <Checkbox
-              key={c}
-              label={c}
-              count={catCounts[c] ?? 0}
-              checked={selectedCats.has(c)}
-              onChange={() => toggleCat(c)}
-            />
-          ))}
-        </div>
+            <div className="suppliers-page__filter-section">
+              <div className="suppliers-page__filter-label">Category</div>
+              {availableCategories.map(c => (
+                <Checkbox
+                  key={c}
+                  label={c}
+                  count={catCounts[c] ?? 0}
+                  checked={selectedCats.has(c)}
+                  onChange={() => toggleCat(c)}
+                />
+              ))}
+            </div>
 
-        <div className="suppliers-page__filter-section">
-          <div className="suppliers-page__filter-label">Certification</div>
-          {CERTIFICATIONS.map(c => (
-            <Checkbox
-              key={c}
-              label={c}
-              count={certCounts[c] ?? 0}
-              checked={selectedCerts.has(c)}
-              onChange={() => toggleCert(c)}
-            />
-          ))}
-        </div>
+            <div className="suppliers-page__filter-section">
+              <div className="suppliers-page__filter-label">Region</div>
+              {availableRegions.map(r => (
+                <Checkbox
+                  key={r}
+                  label={r}
+                  count={regionCounts[r] ?? 0}
+                  checked={selectedRegions.has(r)}
+                  onChange={() => toggleRegion(r)}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </aside>
 
       {/* Card grid */}
       <div className="suppliers-page__main">
+        {(loading || error) ? <PageLoader variant="cards" rows={9} error={error} /> : <>
         <div className="suppliers-page__toolbar">
           <span className="suppliers-page__count">
             <strong>{filtered.length.toLocaleString()}</strong> suppliers
@@ -176,6 +187,7 @@ export function SuppliersPage() {
             </div>
           )}
         </div>
+        </>}
       </div>
 
       {/* Detail panel */}

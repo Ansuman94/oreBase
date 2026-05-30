@@ -65,6 +65,18 @@
     gap: v.$space-5;
   }
 
+  &__metal-more {
+    margin-top: v.$space-6;
+    font-size: v.$font-size-xs;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: v.$font-sans;
+    &:hover { text-decoration: underline; }
+  }
+
   &__type-list {
     display: flex;
     flex-direction: column;
