@@ -2,13 +2,13 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { mineralsRouter }  from './routes/minerals';
-import { suppliersRouter } from './routes/suppliers';
-import { processesRouter } from './routes/processes';
-import { statsRouter }     from './routes/stats';
-import { authRouter }      from './routes/auth';
-import { usersRouter }     from './routes/users';
-import { requireAuth, requireRole } from './middleware/auth';
+import { mineralsRouter }  from './routes/minerals.js';
+import { suppliersRouter } from './routes/suppliers.js';
+import { processesRouter } from './routes/processes.js';
+import { statsRouter }     from './routes/stats.js';
+import { authRouter }      from './routes/auth.js';
+import { usersRouter }     from './routes/users.js';
+import { requireAuth, requireRole } from './middleware/auth.js';
 
 const app = express();
 
