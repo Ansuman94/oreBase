@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { sql } from '../db';
-import type { UserRole } from '../middleware/auth';
+import { sql } from '../db.js';
+import type { UserRole } from '../middleware/auth.js';
 
 const router = Router();
 
