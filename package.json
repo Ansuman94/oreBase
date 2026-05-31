@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"vite\" \"npm run server\"",
     "server": "tsx watch server/index.ts",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
