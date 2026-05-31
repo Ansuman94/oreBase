@@ -12,10 +12,12 @@ import { requireAuth, requireRole } from './middleware/auth';
 
 const app = express();
 
-app.use(cors({
-  origin:      ['http://localhost:5173', 'http://localhost:4173'],
-  credentials: true,
-}));
+const corsOrigins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+];
+app.use(cors({ origin: corsOrigins, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -37,7 +39,11 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-const PORT = process.env.PORT ?? 3001;
-app.listen(PORT, () => {
-  console.log(`OreBase API server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT ?? 3001;
+  app.listen(PORT, () => {
+    console.log(`OreBase API server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
