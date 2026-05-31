@@ -1,0 +1,49 @@
+@use '../../styles/variables' as v;
+
+.float-tag {
+  padding: v.$space-3 v.$space-8;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: v.$font-sans;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-weight: 400;
+
+  &--active { font-weight: 500; }
+
+  &--vg {
+    color: #2E7A50;
+    background: transparent;
+    border: 1px solid #B0D8C0;
+    &:hover                   { background: #EEF7F2; }
+    &.float-tag--active       { background: #E3F0EA; border-color: #6FBB96; }
+  }
+  &--g {
+    color: #235A90;
+    background: transparent;
+    border: 1px solid #A8C8E8;
+    &:hover                   { background: #EEF4FF; }
+    &.float-tag--active       { background: #E8F4FF; border-color: #5898D8; }
+  }
+  &--m {
+    color: #8A6510;
+    background: transparent;
+    border: 1px solid #D8C070;
+    &:hover                   { background: #FFFAEA; }
+    &.float-tag--active       { background: #FFF8E0; border-color: #C8A030; }
+  }
+  &--p {
+    color: #8A3A10;
+    background: transparent;
+    border: 1px solid #D8A878;
+    &:hover                   { background: #FFF5EE; }
+    &.float-tag--active       { background: #FFF0E0; border-color: #C07840; }
+  }
+  &--n {
+    color: v.$color-muted;
+    background: transparent;
+    border: 1px solid v.$color-border;
+    &:hover                   { background: v.$color-surface; }
+    &.float-tag--active       { background: v.$color-surface; border-color: v.$color-faint; }
+  }
+}

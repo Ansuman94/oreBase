@@ -1,0 +1,101 @@
+@use '../../styles/variables' as v;
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: v.$space-8;
+  padding: v.$space-6 v.$space-14;
+  font-size: v.$font-size-nav;
+  color: v.$color-sub;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: v.$font-sans;
+  white-space: nowrap;
+
+  &:hover {
+    color: v.$color-text;
+    background: v.$color-surface;
+  }
+
+  &--active {
+    color: v.$color-brand;
+    font-weight: 500;
+    background: v.$color-brand-light;
+    border-left-color: v.$color-brand;
+
+    .sidebar-item__icon svg { opacity: 1; }
+    .sidebar-item__badge {
+      color: v.$color-brand;
+      background: v.$color-brand-light;
+      border-color: v.$color-brand-mid;
+    }
+  }
+
+  &--collapsed {
+    justify-content: center;
+    padding: v.$space-6;
+    border-left-color: transparent;
+
+    &.sidebar-item--active {
+      border-left-color: v.$color-brand;
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      opacity: 0.8;
+    }
+  }
+
+  &__label { flex: 1; }
+
+  &__badge {
+    margin-left: auto;
+    font-size: v.$font-size-xxs;
+    font-family: v.$font-mono;
+    color: v.$color-faint;
+    background: v.$color-surface;
+    border: 1px solid v.$color-border-light;
+    border-radius: 10px;
+    padding: 0 v.$space-4;
+  }
+
+  &__tooltip {
+    position: fixed;
+    left: calc(#{v.$sidebar-collapsed-width} + v.$space-10);
+    transform: translateY(-50%);
+    background: v.$color-dark;
+    color: v.$color-white;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    padding: v.$space-3 v.$space-10;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 300;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+
+    // arrow pointing left
+    &::before {
+      content: '';
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-right-color: v.$color-dark;
+    }
+  }
+}

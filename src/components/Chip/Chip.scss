@@ -1,0 +1,19 @@
+@use '../../styles/variables' as v;
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-2;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: 3px;
+  padding: v.$space-1 v.$space-6;
+  font-size: 11px;
+  color: v.$color-sub;
+  font-family: v.$font-mono;
+
+  &__value {
+    color: v.$color-text;
+    font-weight: 500;
+  }
+}

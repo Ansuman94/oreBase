@@ -1,0 +1,36 @@
+@use '../../styles/variables' as v;
+
+.filter-panel {
+  width: v.$filter-width;
+  min-width: v.$filter-width;
+  background: v.$color-white;
+  border-right: 1px solid v.$color-border;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  &__header {
+    padding: v.$space-12 v.$space-14 v.$space-10;
+    border-bottom: 1px solid v.$color-border;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 12px;
+    font-weight: 600;
+    color: v.$color-text;
+  }
+
+  &__clear {
+    font-size: 11px;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    font-family: v.$font-sans;
+    cursor: pointer;
+
+    &:hover { opacity: 0.8; }
+  }
+}

@@ -1,0 +1,147 @@
+@use '../../styles/variables' as v;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: v.$nav-height;
+  background: v.$color-white;
+  border-bottom: 1px solid v.$color-border;
+  display: flex;
+  align-items: center;
+
+  &__brand {
+    width: v.$sidebar-width;
+    padding: 0 v.$space-18;
+    display: flex;
+    align-items: center;
+    gap: v.$space-9;
+    flex-shrink: 0;
+    height: 100%;
+  }
+
+  &__gem {
+    width: 30px;
+    height: 30px;
+    background: v.$color-brand;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg { width: 16px; height: 16px; }
+  }
+
+  &__name {
+    font-size: v.$font-size-lg;
+    font-weight: 600;
+    color: v.$color-dark;
+    letter-spacing: -0.3px;
+  }
+
+  &__tag {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: -1px;
+    letter-spacing: 0.3px;
+  }
+
+  &__center {
+    flex: 1;
+    padding: 0 v.$space-14;
+    display: flex;
+    align-items: center;
+    gap: v.$space-10;
+    height: 100%;
+    border-right: 1px solid v.$color-border;
+
+    .search-bar { flex: 1; }
+    .btn { margin-left: auto; }
+  }
+
+  &__right {
+    padding: 0 v.$space-16;
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    flex-shrink: 0;
+  }
+
+  &__user-menu {
+    position: relative;
+  }
+
+  &__avatar-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    outline-offset: 2px;
+
+    &:focus-visible { outline: 2px solid v.$color-brand; }
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + v.$space-8);
+    right: 0;
+    min-width: 180px;
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    z-index: 300;
+    overflow: hidden;
+  }
+
+  &__dropdown-header {
+    padding: v.$space-12 v.$space-14;
+    border-bottom: 1px solid v.$color-border;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__dropdown-name {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__dropdown-role {
+    font-size: v.$font-size-xs;
+    color: v.$color-muted;
+    text-transform: capitalize;
+  }
+
+  &__dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    padding: v.$space-10 v.$space-14;
+    background: none;
+    border: none;
+    font-size: v.$font-size-sm;
+    font-family: v.$font-sans;
+    color: v.$color-text;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.1s;
+
+    svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    &:hover { background: v.$color-bg; }
+
+    &--logout { color: #B02020; }
+  }
+}

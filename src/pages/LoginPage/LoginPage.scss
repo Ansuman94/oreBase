@@ -1,0 +1,192 @@
+@use '../../styles/variables' as v;
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: v.$color-bg;
+
+  // ── Top header strip (brand only, left-aligned) ───────────────────────────
+  &__header {
+    width: 100%;
+    padding: v.$space-18 v.$space-24;
+    border-bottom: 1px solid v.$color-border;
+    background: v.$color-white;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: v.$space-9;
+  }
+
+  &__gem {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: v.$color-brand;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg { width: 16px; height: 16px; }
+  }
+
+  &__brand-name {
+    font-size: v.$font-size-lg;
+    font-weight: 600;
+    color: v.$color-dark;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+
+  &__brand-tag {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: -1px;
+    letter-spacing: 0.3px;
+  }
+
+  // ── Main content — vertically + horizontally centered ────────────────────
+  &__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8vh v.$space-24 v.$space-40;
+    gap: v.$space-60;
+  }
+
+  // ── Hero text (mirrors SearchPage hero) ───────────────────────────────────
+  &__hero {
+    text-align: center;
+
+    h1 {
+      font-size: v.$font-size-hero;
+      font-weight: 600;
+      color: v.$color-dark;
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin: 0 0 v.$space-10;
+
+      em {
+        font-style: normal;
+        color: v.$color-brand;
+      }
+    }
+
+    p {
+      font-size: v.$font-size-md;
+      color: v.$color-sub;
+      max-width: 460px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+  }
+
+  // ── Login card ────────────────────────────────────────────────────────────
+  &__card {
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 10px;
+    padding: v.$space-32 v.$space-40;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  &__title {
+    font-size: v.$font-size-md;
+    font-weight: 600;
+    color: v.$color-text;
+    margin: 0 0 v.$space-24;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-16;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-6;
+  }
+
+  &__label {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: v.$color-text;
+  }
+
+  &__input {
+    height: 40px;
+    padding: 0 v.$space-12;
+    border: 1px solid v.$color-border;
+    border-radius: 5px;
+    font-size: v.$font-size-base;
+    font-family: v.$font-sans;
+    color: v.$color-text;
+    background: v.$color-white;
+    transition: border-color 0.12s, box-shadow 0.12s;
+    outline: none;
+
+    &::placeholder { color: v.$color-faint; }
+
+    &:focus {
+      border-color: v.$color-brand;
+      box-shadow: 0 0 0 3px v.$color-brand-light;
+    }
+  }
+
+  &__error {
+    font-size: v.$font-size-sm;
+    color: #B02020;
+    background: #FFF0F0;
+    border: 1px solid #F5CCCC;
+    border-radius: 5px;
+    padding: v.$space-8 v.$space-12;
+  }
+
+  &__submit {
+    height: 40px;
+    background: v.$color-brand;
+    color: v.$color-white;
+    border: none;
+    border-radius: 5px;
+    font-size: v.$font-size-base;
+    font-weight: 600;
+    font-family: v.$font-sans;
+    cursor: pointer;
+    margin-top: v.$space-4;
+    transition: background 0.12s;
+
+    &:hover:not(:disabled) { background: v.$color-brand-dark; }
+    &:disabled             { opacity: 0.6; cursor: not-allowed; }
+  }
+}
+
+// Full-screen spinner while AuthContext resolves session
+.auth-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: v.$color-bg;
+
+  &__spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid v.$color-border;
+    border-top-color: v.$color-brand;
+    border-radius: 50%;
+    animation: auth-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}

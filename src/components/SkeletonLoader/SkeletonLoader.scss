@@ -1,0 +1,36 @@
+@use '../../styles/variables' as v;
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    v.$color-border-light 25%,
+    v.$color-surface 50%,
+    v.$color-border-light 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+
+  &--line {
+    height: 14px;
+    width: 100%;
+    border-radius: 3px;
+  }
+
+  &--block {
+    height: 60px;
+    width: 100%;
+    border-radius: 5px;
+  }
+
+  &--card {
+    height: 120px;
+    width: 100%;
+    border-radius: 6px;
+  }
+}

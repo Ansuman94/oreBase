@@ -1,0 +1,215 @@
+@use '../../styles/variables' as v;
+
+.search-results-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: v.$space-16;
+    padding: v.$space-12 v.$space-24;
+    background: v.$color-white;
+    border-bottom: 1px solid v.$color-border;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    gap: v.$space-5;
+    font-size: v.$font-size-sm;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: v.$font-sans;
+    white-space: nowrap;
+
+    &:hover { text-decoration: underline; }
+
+    svg { flex-shrink: 0; }
+  }
+
+  &__query-info {
+    font-size: v.$font-size-base;
+    color: v.$color-muted;
+
+    strong { color: v.$color-text; font-weight: 600; }
+    em     { font-style: normal; color: v.$color-text; }
+  }
+
+  // ── Scrollable body ──────────────────────────────────────────────────────────
+
+  &__body {
+    flex: 1;
+    padding: v.$space-24;
+    display: flex;
+    flex-direction: column;
+    gap: v.$space-32;
+    background: v.$color-bg;
+  }
+
+  // ── Section ──────────────────────────────────────────────────────────────────
+
+  &__section {
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-8;
+    padding: v.$space-10 v.$space-16;
+    background: v.$color-surface;
+    border-bottom: 1px solid v.$color-border-light;
+  }
+
+  &__section-left {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+  }
+
+  &__toggle {
+    font-size: v.$font-size-sm;
+    color: v.$color-brand;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: v.$font-sans;
+    white-space: nowrap;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  &__section-title {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text;
+    letter-spacing: 0.2px;
+  }
+
+  &__section-count {
+    font-size: v.$font-size-xxs;
+    font-family: v.$font-mono;
+    font-weight: 600;
+    color: v.$color-white;
+    background: v.$color-brand;
+    border-radius: 10px;
+    padding: 1px v.$space-6;
+  }
+
+  // ── Rows container ───────────────────────────────────────────────────────────
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__rows--collapsed {
+    // 5 rows × ~41px each (10px top + 10px bottom padding + ~21px content)
+    min-height: 205px;
+  }
+
+  // ── Result row ───────────────────────────────────────────────────────────────
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: v.$space-16;
+    padding: v.$space-10 v.$space-16;
+    border: none;
+    border-bottom: 1px solid v.$color-border-light;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-family: v.$font-sans;
+    transition: background 0.1s;
+
+    &:last-child { border-bottom: none; }
+    &:hover      { background: v.$color-surface; }
+  }
+
+  &__row-main {
+    display: flex;
+    align-items: baseline;
+    gap: v.$space-8;
+    min-width: 0;
+  }
+
+  &__row-name {
+    font-size: v.$font-size-base;
+    color: v.$color-text;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__row-formula {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    font-family: v.$font-mono;
+    white-space: nowrap;
+  }
+
+  &__row-meta {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    flex-shrink: 0;
+  }
+
+  &__row-tag {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: v.$color-brand;
+    background: v.$color-brand-light;
+    border: 1px solid v.$color-brand-mid;
+    border-radius: 3px;
+    padding: 1px v.$space-6;
+    font-family: v.$font-mono;
+    white-space: nowrap;
+  }
+
+  &__row-sub {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    white-space: nowrap;
+  }
+
+  // ── Loading skeleton rows ────────────────────────────────────────────────────
+
+  &__row-skeleton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: v.$space-12 v.$space-16;
+    border-bottom: 1px solid v.$color-border-light;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  // ── Empty state ──────────────────────────────────────────────────────────────
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: v.$space-60;
+    font-size: v.$font-size-md;
+    color: v.$color-muted;
+  }
+}

@@ -1,0 +1,49 @@
+@use '../../styles/variables' as v;
+
+.supplier-card {
+  background: v.$color-white;
+  border: 1px solid v.$color-border;
+  border-radius: 5px;
+  padding: v.$space-12 v.$space-14;
+  cursor: pointer;
+  transition: border-color 0.12s;
+
+  &:hover { border-color: v.$color-brand-mid; }
+
+  &--selected {
+    border-color: v.$color-brand;
+    box-shadow: 0 0 0 2px rgba(200, 90, 10, 0.1);
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 500;
+    color: v.$color-text;
+    margin-bottom: v.$space-3;
+  }
+
+  &__spec {
+    font-size: 12px;
+    color: v.$color-sub;
+    margin-bottom: v.$space-8;
+    line-height: 1.4;
+  }
+
+  &__tags {
+    display: flex;
+    gap: v.$space-4;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  &__region {
+    font-size: v.$font-size-xxs;
+    font-weight: 500;
+    padding: 1px v.$space-6;
+    border-radius: 3px;
+    background: v.$color-amber-light;
+    color: v.$color-amber;
+    border: 1px solid v.$color-amber-border;
+    white-space: nowrap;
+  }
+}

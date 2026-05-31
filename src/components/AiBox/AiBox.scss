@@ -1,0 +1,32 @@
+@use '../../styles/variables' as v;
+
+.ai-box {
+  background: linear-gradient(135deg, #FFF6F0, #FFF0E8);
+  border: 1px solid v.$color-brand-mid;
+  border-radius: 5px;
+  padding: v.$space-10 v.$space-12;
+
+  &__head {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: v.$color-brand;
+    margin-bottom: v.$space-4;
+    display: flex;
+    align-items: center;
+    gap: v.$space-4;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      stroke: v.$color-brand;
+    }
+  }
+
+  &__body {
+    font-size: 12px;
+    color: v.$color-text;
+    line-height: 1.65;
+  }
+}

@@ -1,0 +1,125 @@
+// ── Colors ───────────────────────────────────────────────────────────────────
+
+// Brand
+$color-brand:        #C85A0A;
+$color-brand-dark:   #9E420A;
+$color-brand-light:  #F5EDE6;
+$color-brand-mid:    #E8A882;
+
+// Text & neutrals
+$color-dark:         #141210;
+$color-text:         #1E1A17;
+$color-sub:          #5C5450;
+$color-muted:        #8C8480;
+$color-faint:        #B8B2AE;
+
+// Surfaces & borders
+$color-bg:           #F8F5F2;
+$color-surface:      #F2EDE8;
+$color-white:        #FFFFFF;
+$color-border:       #E4DDD8;
+$color-border-light: #EDE8E4;
+
+// Semantic — green (ok / positive)
+$color-green:        #1E6B42;
+$color-green-light:  #E3F0EA;
+$color-green-border: #9FCDB5;
+
+// Semantic — amber (warning)
+$color-amber:        #A05A00;
+$color-amber-light:  #FDF1E0;
+$color-amber-border: #E8C07A;
+
+// Semantic — red (bad / error)
+$color-red:          #B02020;
+$color-red-light:    #FAEBEB;
+$color-red-border:   #E8A8A8;
+
+// Semantic — blue (info / user)
+$color-blue:         #1A4F8A;
+$color-blue-light:   #E3ECF7;
+$color-blue-border:  #90B8E8;
+
+// ── Typography ───────────────────────────────────────────────────────────────
+
+$font-sans: 'DM Sans', sans-serif;
+$font-mono: 'DM Mono', monospace;
+
+// Font sizes
+$font-size-xxs:  10px;    // micro labels, badges, brand tag, section headers
+$font-size-xs:   11px;    // mono values, chips, secondary detail text
+$font-size-sm:   12px;    // secondary info, table data, stat rows
+$font-size-nav:  12.5px;  // sidebar items, buttons
+$font-size-base: 13px;    // body default, most UI text
+$font-size-md:   14px;    // descriptive text, detail panel headers
+$font-size-lg:   15px;    // brand name, primary headings
+$font-size-xl:   22px;    // stat numbers, kpi values
+$font-size-hero: 36px;    // hero h1
+
+// ── Spacing (rem, 16 px base) ─────────────────────────────────────────────────
+
+$space-1:   0.125rem;   //  2px
+$space-2:   0.1875rem;  //  3px
+$space-3:   0.25rem;    //  4px
+$space-4:   0.3125rem;  //  5px
+$space-5:   0.375rem;   //  6px
+$space-6:   0.4375rem;  //  7px
+$space-8:   0.5rem;     //  8px
+$space-9:   0.5625rem;  //  9px
+$space-10:  0.625rem;   // 10px
+$space-12:  0.75rem;    // 12px
+$space-14:  0.875rem;   // 14px
+$space-16:  1rem;       // 16px
+$space-18:  1.125rem;   // 18px
+$space-20:  1.25rem;    // 20px
+$space-24:  1.5rem;     // 24px
+$space-32:  2rem;       // 32px
+$space-36:  2.25rem;    // 36px
+$space-40:  2.5rem;     // 40px
+$space-60:  3.75rem;    // 60px
+
+// ── Layout tokens ─────────────────────────────────────────────────────────────
+
+$nav-height:               3.375rem;  // 54px
+$sidebar-width:            13.125rem; // 210px
+$sidebar-collapsed-width:  3rem;      // 48px
+$filter-width:             13.75rem;  // 220px
+$detail-width:             23.125rem; // 370px
+
+// ── Metal colors ──────────────────────────────────────────────────────────────
+
+$color-metal-cu:    #B8520A;  // Copper
+$color-metal-li:    #2E7D6B;  // Lithium
+$color-metal-ni:    #2952A0;  // Nickel
+$color-metal-co:    #7C3A8C;  // Cobalt
+$color-metal-au:    #B07800;  // Gold
+$color-metal-ag:    #607090;  // Silver
+$color-metal-fe:    #8A4030;  // Iron
+$color-metal-mn:    #506020;  // Manganese
+$color-metal-zn:    #406870;  // Zinc
+$color-metal-pb:    #5A5870;  // Lead
+$color-metal-ree:   #7A4060;  // Rare earth
+$color-metal-pt:    #505A60;  // Platinum
+$color-metal-other: #505050;  // Other
+
+// ── Mineral-type badge colors ─────────────────────────────────────────────────
+
+$badge-silicate-bg:     #E8F0FF;
+$badge-silicate-text:   #1A3A7A;
+$badge-silicate-border: #90B0E8;
+
+$badge-native-bg:       #FBF0FF;
+$badge-native-text:     #5A2880;
+$badge-native-border:   #C8A0E0;
+
+$badge-phosphate-bg:    #E8FFF0;
+$badge-phosphate-text:  #1A5A2A;
+$badge-phosphate-border:#80D0A0;
+
+$badge-sulfate-bg:      #F0FAFF;
+$badge-sulfate-text:    #1A4A6A;
+$badge-sulfate-border:  #80C0E0;
+
+$badge-halide-bg:       #FFF0F8;
+$badge-halide-text:     #7A1A50;
+$badge-halide-border:   #E080C0;

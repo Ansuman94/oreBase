@@ -1,0 +1,33 @@
+@use '../../styles/variables' as v;
+
+.view-toggle {
+  display: flex;
+  border: 1px solid v.$color-border;
+  border-radius: 4px;
+  overflow: hidden;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: v.$space-5 v.$space-8;
+    background: none;
+    border: none;
+    color: v.$color-muted;
+    cursor: pointer;
+    transition: all 0.12s;
+
+    &:not(:last-child) {
+      border-right: 1px solid v.$color-border;
+    }
+
+    &:hover { color: v.$color-text; background: v.$color-surface; }
+
+    &--active {
+      background: v.$color-dark;
+      color: v.$color-white;
+
+      &:hover { background: v.$color-dark; }
+    }
+  }
+}

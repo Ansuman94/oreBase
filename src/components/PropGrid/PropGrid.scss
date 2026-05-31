@@ -1,0 +1,32 @@
+@use '../../styles/variables' as v;
+
+.prop-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: v.$space-5;
+
+  &__item {
+    background: v.$color-surface;
+    border-radius: 4px;
+    padding: v.$space-8 v.$space-10;
+  }
+
+  &__label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: v.$color-muted;
+    margin-bottom: v.$space-2;
+  }
+
+  &__value {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+
+    &--ok   { color: v.$color-green; }
+    &--warn { color: v.$color-amber; }
+    &--bad  { color: v.$color-red; }
+  }
+}

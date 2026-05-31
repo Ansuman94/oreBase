@@ -1,0 +1,112 @@
+@use '../../styles/variables' as v;
+
+.sidebar {
+  width: v.$sidebar-width;
+  min-width: v.$sidebar-width;
+  background: v.$color-white;
+  border-right: 1px solid v.$color-border;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease, min-width 0.2s ease;
+
+  &--collapsed {
+    width: v.$sidebar-collapsed-width;
+    min-width: v.$sidebar-collapsed-width;
+
+    .sidebar__label        { display: none; }
+    .sidebar__stats        { display: none; }
+    .sidebar__divider      { margin: v.$space-8; }
+    .sidebar__toggle-icon  { transform: rotate(180deg); }
+    .sidebar__label-row    { justify-content: center; padding: 0 0 v.$space-4; }
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  &__section {
+    padding: v.$space-12 0 v.$space-8;
+  }
+
+  &__label-row {
+    display: flex;
+    align-items: center;
+    padding: 0 v.$space-8 v.$space-4 v.$space-14;
+    min-height: 20px;
+    transition: padding 0.2s ease;
+  }
+
+  &__label {
+    flex: 1;
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: v.$color-faint;
+    white-space: nowrap;
+  }
+
+  &__toggle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: v.$color-faint;
+    cursor: pointer;
+    transition: color 0.12s;
+
+    &:hover { color: v.$color-text; }
+  }
+
+  &__toggle-icon {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  &__divider {
+    height: 1px;
+    background: v.$color-border;
+    margin: v.$space-8 v.$space-14;
+    transition: margin 0.2s ease;
+  }
+
+  &__stats {
+    padding: v.$space-14;
+    margin: 0 v.$space-10 v.$space-10;
+    background: v.$color-surface;
+    border-radius: 6px;
+    border: 1px solid v.$color-border-light;
+  }
+
+  &__stats-title {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: v.$space-8;
+  }
+
+  &__stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: v.$font-size-sm;
+    padding: v.$space-2 0;
+    border-bottom: 1px solid v.$color-border-light;
+
+    &:last-child { border-bottom: none; }
+
+    span:last-child {
+      font-family: v.$font-mono;
+      font-weight: 500;
+      color: v.$color-text;
+    }
+  }
+}

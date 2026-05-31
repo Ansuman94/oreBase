@@ -1,0 +1,23 @@
+@use '../../styles/variables' as v;
+@use '../Input/Input.scss';
+
+.field {
+  &__select {
+    width: 100%;
+    border: 1px solid v.$color-border;
+    border-radius: 4px;
+    padding: v.$space-6 v.$space-10;
+    font-size: 13px;
+    font-family: v.$font-sans;
+    color: v.$color-text;
+    background: v.$color-surface;
+    outline: none;
+    appearance: none;
+    transition: all 0.12s;
+
+    &:focus {
+      border-color: v.$color-brand;
+      background: v.$color-white;
+    }
+  }
+}

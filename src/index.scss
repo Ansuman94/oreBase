@@ -1,0 +1,49 @@
+@use './styles/variables' as v;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  font-size: 16px;
+}
+
+body {
+  height: 100%;
+  font-family: v.$font-sans;
+  background: v.$color-bg;
+  color: v.$color-text;
+  font-size: v.$font-size-base;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: v.$font-sans;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: v.$font-sans;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: v.$color-border;
+  border-radius: 2px;
+}
+
+#root {
+  height: 100%;
+}

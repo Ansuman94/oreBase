@@ -1,0 +1,593 @@
+@use '../../styles/variables' as v;
+
+.planner-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: v.$color-bg;
+
+  // ── Tab bar ──────────────────────────────────────────────────────────────
+
+  &__tabbar {
+    background: v.$color-white;
+    border-bottom: 1px solid v.$color-border;
+    display: flex;
+    flex-shrink: 0;
+    padding: 0 v.$space-24;
+  }
+
+  &__tab {
+    padding: v.$space-10 v.$space-16;
+    font-size: v.$font-size-nav;
+    color: v.$color-muted;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: v.$font-sans;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.12s, border-color 0.12s;
+    margin-bottom: -1px;
+    &:hover { color: v.$color-text; }
+    &--active { color: v.$color-brand; border-bottom-color: v.$color-brand; font-weight: 500; }
+  }
+
+  // ── Scrollable content ────────────────────────────────────────────────────
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: v.$space-20 v.$space-24;
+  }
+
+  // ── Form card ─────────────────────────────────────────────────────────────
+
+  &__form {
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 6px;
+    padding: v.$space-18 v.$space-20;
+    margin-bottom: v.$space-16;
+  }
+
+  &__form-title {
+    font-size: v.$font-size-md;
+    font-weight: 600;
+    color: v.$color-text;
+    margin-bottom: v.$space-14;
+  }
+
+  &__form-desc {
+    font-size: v.$font-size-sm;
+    color: v.$color-muted;
+    margin: -8px 0 v.$space-14;
+  }
+
+  // ── Input field ───────────────────────────────────────────────────────────
+
+  &__field {
+    margin-bottom: v.$space-10;
+
+    label {
+      display: block;
+      font-size: v.$font-size-xxs;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: v.$color-muted;
+      margin-bottom: v.$space-3;
+    }
+
+    select,
+    input[type='text'],
+    input[type='number'] {
+      width: 100%;
+      border: 1px solid v.$color-border;
+      border-radius: 4px;
+      padding: 7px v.$space-10;
+      font-size: v.$font-size-base;
+      font-family: v.$font-sans;
+      color: v.$color-text;
+      background: v.$color-surface;
+      outline: none;
+      appearance: none;
+      transition: border-color 0.12s, background 0.12s;
+      &:focus { border-color: v.$color-brand; background: v.$color-white; }
+    }
+
+    input[type='range'] {
+      width: 100%;
+      accent-color: v.$color-brand;
+      margin-top: v.$space-3;
+      cursor: pointer;
+    }
+  }
+
+  &__range-val {
+    font-family: v.$font-mono;
+    color: v.$color-brand;
+    font-weight: 500;
+  }
+
+  &__range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: 2px;
+  }
+
+  // ── Grid layouts ──────────────────────────────────────────────────────────
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: v.$space-12;
+    margin-bottom: v.$space-12;
+  }
+
+  &__cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: v.$space-14;
+    margin-bottom: v.$space-16;
+  }
+
+  &__cols-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: v.$space-14;
+    margin-bottom: v.$space-16;
+    &--flush { margin-bottom: 0; }
+  }
+
+  &__cols-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: v.$space-10;
+  }
+
+  &__col-header {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: v.$space-10;
+  }
+
+  &__col-subheader {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: v.$space-12;
+    margin-bottom: v.$space-8;
+  }
+
+  // ── Modifiers row ─────────────────────────────────────────────────────────
+
+  &__mods {
+    display: flex;
+    gap: v.$space-14;
+    flex-wrap: wrap;
+    margin-bottom: v.$space-14;
+  }
+
+  &__mod {
+    display: flex;
+    align-items: center;
+    gap: v.$space-5;
+    font-size: v.$font-size-sm;
+    color: v.$color-sub;
+    cursor: pointer;
+    input { accent-color: v.$color-brand; }
+  }
+
+  // ── Run button ────────────────────────────────────────────────────────────
+
+  &__run {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: v.$color-brand;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 9px v.$space-20;
+    font-size: v.$font-size-base;
+    font-weight: 500;
+    font-family: v.$font-sans;
+    cursor: pointer;
+    transition: background 0.12s;
+    &:hover { background: v.$color-brand-dark; }
+    svg { width: 14px; height: 14px; }
+  }
+
+  // ── Penalty box (amber) ───────────────────────────────────────────────────
+
+  &__penalty-box {
+    background: v.$color-amber-light;
+    border: 1px solid v.$color-amber-border;
+    border-radius: 5px;
+    padding: v.$space-12 v.$space-14;
+    margin-bottom: v.$space-14;
+  }
+
+  &__penalty-box-title {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: v.$color-amber;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: v.$space-8;
+  }
+
+  &__as-note {
+    font-size: v.$font-size-sm;
+    color: v.$color-amber;
+    align-self: flex-end;
+    padding-bottom: 2px;
+  }
+
+  // ── Ore→concentrate box (blue) ────────────────────────────────────────────
+
+  &__oreconv-box {
+    background: #E3ECF7;
+    border: 1px solid #90B8E8;
+    border-radius: 5px;
+    padding: v.$space-12 v.$space-14;
+    margin-bottom: v.$space-14;
+  }
+
+  &__oreconv-box-title {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: #1A4F8A;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: v.$space-8;
+  }
+
+  // ── Route screener results ────────────────────────────────────────────────
+
+  &__screener-out {
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: v.$space-16;
+  }
+
+  &__screener-header {
+    background: v.$color-brand;
+    padding: 11px v.$space-16;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__screener-header-title {
+    font-size: v.$font-size-md;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  &__screener-header-sub {
+    font-size: v.$font-size-xxs;
+    color: rgba(255,255,255,.75);
+    margin-top: 2px;
+  }
+
+  &__screener-header-note {
+    font-size: v.$font-size-xxs;
+    color: rgba(255,255,255,.65);
+  }
+
+  &__screener-body {
+    padding: v.$space-14 v.$space-16;
+  }
+
+  &__mod-box {
+    background: v.$color-brand-light;
+    border: 1px solid v.$color-brand-mid;
+    border-radius: 4px;
+    padding: v.$space-10 v.$space-12;
+    margin-bottom: v.$space-14;
+  }
+
+  &__mod-box-title {
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: v.$color-brand;
+    margin-bottom: v.$space-5;
+  }
+
+  &__mod-item {
+    font-size: v.$font-size-sm;
+    color: v.$color-text;
+    margin-bottom: v.$space-3;
+    padding-left: v.$space-10;
+    border-left: 2px solid v.$color-brand-mid;
+  }
+
+  &__cat-badge {
+    font-size: v.$font-size-xxs;
+    font-weight: 500;
+    padding: 2px v.$space-8;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  &__suit-badge {
+    font-size: v.$font-size-xxs;
+    font-weight: 500;
+    padding: 2px v.$space-8;
+    border-radius: 3px;
+    &--ok  { background: v.$color-green-light;  color: v.$color-green;  border: 1px solid v.$color-green-border; }
+    &--bad { background: v.$color-red-light;    color: v.$color-red;    border: 1px solid v.$color-red-border;   }
+  }
+
+  &__score-note {
+    padding: v.$space-8 v.$space-10;
+    background: v.$color-surface;
+    border-radius: 4px;
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: v.$space-10;
+  }
+
+  // ── KPI grid ──────────────────────────────────────────────────────────────
+
+  &__kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: v.$space-10;
+    margin-bottom: v.$space-14;
+  }
+
+  &__kpi-box {
+    background: v.$color-surface;
+    border: 1px solid v.$color-border-light;
+    border-radius: 5px;
+    padding: v.$space-12 v.$space-14;
+  }
+
+  &__kpi-label {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: v.$space-3;
+  }
+
+  &__kpi-val {
+    font-size: v.$font-size-xl;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+  }
+
+  &__kpi-sub {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: 2px;
+  }
+
+  // ── Results section card ──────────────────────────────────────────────────
+
+  &__section {
+    background: v.$color-white;
+    border: 1px solid v.$color-border;
+    border-radius: 6px;
+    padding: v.$space-16 v.$space-20;
+    margin-bottom: v.$space-14;
+  }
+
+  &__section-title {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    color: v.$color-text;
+    margin-bottom: v.$space-12;
+  }
+
+  &__section-sub {
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+    margin-top: -8px;
+    margin-bottom: v.$space-12;
+  }
+
+  // ── Horizontal bar rows ───────────────────────────────────────────────────
+
+  &__bar-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-10;
+    padding: 7px 0;
+    border-bottom: 1px solid v.$color-border-light;
+    &:last-child { border-bottom: none; }
+
+    &--total {
+      border-top: 2px solid v.$color-border;
+      margin-top: v.$space-3;
+      padding-top: v.$space-8;
+      border-bottom: none;
+    }
+
+    &--yours {
+      background: v.$color-brand-light;
+      border-radius: 4px;
+      padding: v.$space-8 v.$space-10;
+      margin-top: v.$space-5;
+      border-bottom: none;
+    }
+  }
+
+  &__bar-label {
+    font-size: v.$font-size-sm;
+    color: v.$color-sub;
+    flex: 1;
+    .planner-page__bar-row--total & { font-weight: 600; color: v.$color-text; }
+    .planner-page__bar-row--yours & { font-weight: 600; color: v.$color-brand; }
+  }
+
+  &__bar-wrap {
+    width: 200px;
+    height: 8px;
+    background: v.$color-surface;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  &__bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+
+  &__bar-val {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+    width: 60px;
+    text-align: right;
+    flex-shrink: 0;
+    &--brand { color: v.$color-brand; }
+  }
+
+  &__bar-pct {
+    font-size: v.$font-size-xs;
+    color: v.$color-muted;
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  // ── Column chart ──────────────────────────────────────────────────────────
+
+  &__chart {
+    position: relative;
+    height: 180px;
+  }
+
+  &__chart-bars {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  &__chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    justify-content: flex-end;
+  }
+
+  &__chart-col-val {
+    font-size: 9px;
+    font-family: v.$font-mono;
+    white-space: nowrap;
+  }
+
+  &__chart-col-bar {
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.3s;
+    min-height: 4px;
+  }
+
+  &__chart-col-label {
+    font-size: 9px;
+    font-family: v.$font-mono;
+  }
+
+  &__chart-axis {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: v.$font-size-xxs;
+    color: v.$color-muted;
+  }
+
+  // ── NSR waterfall rows ────────────────────────────────────────────────────
+
+  &__wfall-row {
+    display: flex;
+    align-items: center;
+    gap: v.$space-8;
+    padding: 6px 0;
+    border-bottom: 1px solid v.$color-border-light;
+    &:last-child { border-bottom: none; }
+
+    &--total {
+      border-top: 2px solid v.$color-border;
+      margin-top: v.$space-5;
+      padding-top: v.$space-8;
+      border-bottom: none;
+    }
+  }
+
+  &__wfall-label {
+    font-size: v.$font-size-sm;
+    color: v.$color-sub;
+    width: 220px;
+    flex-shrink: 0;
+    .planner-page__wfall-row--total & { font-weight: 600; color: v.$color-text; }
+  }
+
+  &__wfall-val {
+    font-size: v.$font-size-sm;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    width: 96px;
+    text-align: right;
+    flex-shrink: 0;
+    &--brand { color: v.$color-brand; font-size: v.$font-size-base; }
+  }
+
+  // ── Penalty table ─────────────────────────────────────────────────────────
+
+  &__pen-table {
+    margin-bottom: v.$space-8;
+  }
+
+  &__pen-header {
+    display: grid;
+    grid-template-columns: 80px 100px 100px 110px 1fr;
+    font-size: v.$font-size-xxs;
+    font-weight: 600;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 6px 0;
+    border-bottom: 1px solid v.$color-border;
+  }
+
+  &__pen-row {
+    display: grid;
+    grid-template-columns: 80px 100px 100px 110px 1fr;
+    font-size: v.$font-size-sm;
+    padding: 7px 0;
+    border-bottom: 1px solid v.$color-border-light;
+    align-items: center;
+    &:last-child { border-bottom: none; }
+  }
+
+  &__pen-el    { font-weight: 500; color: v.$color-text; }
+  &__pen-mono  { font-family: v.$font-mono; &--muted { color: v.$color-muted; } }
+  &__pen-note  { font-size: v.$font-size-xxs; color: v.$color-muted; }
+}

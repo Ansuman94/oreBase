@@ -1,0 +1,12 @@
+@use '../../styles/variables' as v;
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border-light;
+  border-radius: 3px;
+  padding: v.$space-1 v.$space-6;
+  font-size: 11px;
+  color: v.$color-sub;
+}

@@ -1,0 +1,29 @@
+@use '../../styles/variables' as v;
+
+.kpi-box {
+  background: v.$color-surface;
+  border: 1px solid v.$color-border-light;
+  border-radius: 5px;
+  padding: v.$space-12 v.$space-14;
+
+  &__label {
+    font-size: 10px;
+    color: v.$color-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: v.$space-3;
+  }
+
+  &__value {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: v.$font-mono;
+    color: v.$color-text;
+  }
+
+  &__sub {
+    font-size: 11px;
+    color: v.$color-muted;
+    margin-top: v.$space-1;
+  }
+}
