@@ -157,7 +157,6 @@ export function PlannerPage() {
   const [nsrAgPrice,  setNsrAgPrice]  = useState(28);
   const [nsrHeadCu,   setNsrHeadCu]   = useState(1.2);
   const [nsrRecovery, setNsrRecovery] = useState(87);
-  const [nsrMassPull, setNsrMassPull] = useState(4.3);
   const [nsrFreight,  setNsrFreight]  = useState(35);
   const [nsrDone,     setNsrDone]     = useState(false);
 
@@ -273,7 +272,8 @@ export function PlannerPage() {
   const nsrResult = useMemo(() => {
     const terms      = SMELTER_TERMS[nsrSmelter] ?? SMELTER_TERMS.generic;
     const dryFactor  = (100 - nsrMoisture) / 100;
-    const concPerOre = nsrMassPull / 100;
+    const derivedMassPull = nsrConcCu > 0 ? (nsrHeadCu * (nsrRecovery / 100)) / nsrConcCu : 0;
+    const concPerOre = derivedMassPull / 100;
     const concPerOreDry = concPerOre * dryFactor;
 
     const cuGrossPerDmt = (nsrConcCu / 100) * (nsrCuPay / 100) * nsrCuPrice * 1000 / 1000;
@@ -285,9 +285,9 @@ export function PlannerPage() {
     const payableCuLbs = (nsrConcCu / 100) * (nsrCuPay / 100) * 1000 * 2.20462;
     const rcDeduct     = (nsrRc / 100) * payableCuLbs;
 
-    const asPenPerDmt    = nsrConcAs > terms.asThresh    ? Math.round((nsrConcAs - terms.asThresh) / 0.1) * 3 : 0;
-    const pbPenPerDmt    = nsrConcPb > terms.pbThresh    ? Math.round((nsrConcPb - terms.pbThresh) / 0.1) * 1 : 0;
-    const biPenPerDmt    = nsrConcBi > terms.biThresh    ? Math.round((nsrConcBi - terms.biThresh) / 0.01) * 2 : 0;
+    const asPenPerDmt    = nsrConcAs > terms.asThresh    ? (nsrConcAs - terms.asThresh) / 0.1 * 3 : 0;
+    const pbPenPerDmt    = nsrConcPb > terms.pbThresh    ? (nsrConcPb - terms.pbThresh) / 0.1 : 0;
+    const biPenPerDmt    = nsrConcBi > terms.biThresh    ? (nsrConcBi - terms.biThresh) / 0.01 * 2 : 0;
     const moistPenPerDmt = nsrMoisture > terms.moistThresh ? (nsrMoisture - terms.moistThresh) * 1.5 : 0;
     const totalPenPerDmt = asPenPerDmt + pbPenPerDmt + biPenPerDmt + moistPenPerDmt;
 
@@ -323,11 +323,11 @@ export function PlannerPage() {
 
     return {
       nsrPerOre, netPerDmt, grossPerDmt, tcDeduct, rcDeduct, totalPenPerDmt,
-      waterfall, penalties, cuPrices, nsrAtPrice, nsrCuPrice,
+      waterfall, penalties, cuPrices, nsrAtPrice, nsrCuPrice, derivedMassPull,
     };
   }, [nsrConcCu, nsrConcAu, nsrConcAg, nsrConcAs, nsrConcPb, nsrConcBi, nsrMoisture,
       nsrSmelter, nsrTc, nsrRc, nsrCuPay, nsrAuPay, nsrAgPay,
-      nsrCuPrice, nsrAuPrice, nsrAgPrice, nsrHeadCu, nsrRecovery, nsrMassPull, nsrFreight]);
+      nsrCuPrice, nsrAuPrice, nsrAgPrice, nsrHeadCu, nsrRecovery, nsrFreight]);
 
   // ── Route screener handler ────────────────────────────────────────────────
 
@@ -794,7 +794,6 @@ export function PlannerPage() {
                   {([
                     ['Head grade Cu (%)',      nsrHeadCu,   setNsrHeadCu,   0.1, 8,   0.1],
                     ['Recovery (%)',           nsrRecovery, setNsrRecovery, 40,  99,   1],
-                    ['Mass pull (%)',          nsrMassPull, setNsrMassPull, 0.5, 20,   0.1],
                     ['Freight to port ($/wmt)',nsrFreight,  setNsrFreight,  0,   200,  1],
                   ] as [string, number, (v: number) => void, number, number, number][]).map(([label, val, set, min, max, step]) => (
                     <div key={label} className="planner-page__field">
@@ -802,6 +801,10 @@ export function PlannerPage() {
                       <input type="number" value={val} min={min} max={max} step={step} onChange={e => set(parseFloat(e.target.value) || 0)} />
                     </div>
                   ))}
+                  <div className="planner-page__field">
+                    <label>Mass pull (%) — derived</label>
+                    <input type="number" value={nsrResult.derivedMassPull.toFixed(2)} readOnly />
+                  </div>
                 </div>
               </div>
 
